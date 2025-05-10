@@ -1,0 +1,12 @@
+<section class="listing">
+    <img
+            class="listing-photo"
+            ngSrc="{{cardContent.photo}}"
+            width="400" height="200"
+            alt="map of {{ cardContent.name }}"
+            crossorigin
+    />
+    <h2 class="listing-heading">{{ cardContent.name }}</h2>
+    <p class="listing-location">{{ cardContent.type }}</p>
+    <a [routerLink]="['/details', cardContent.id]"><br/>Play</a>
+</section>

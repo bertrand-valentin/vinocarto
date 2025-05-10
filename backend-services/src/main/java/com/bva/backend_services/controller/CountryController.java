@@ -4,15 +4,13 @@ import com.bva.backend_services.service.CountryService;
 import com.bva.vinocarto_core.model.CountryDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/country")
+@CrossOrigin(origins = "*")
 public class CountryController {
 
     private final CountryService countryService;
@@ -21,10 +19,16 @@ public class CountryController {
         this.countryService = countryService;
     }
 
-    @RequestMapping("/{name}")
-    public ResponseEntity<String> getCountry(@PathVariable String name) {
+    @RequestMapping("/name/{name}")
+    public ResponseEntity<CountryDto> getCountry(@PathVariable String name) {
         CountryDto country = countryService.getCountryByName(name);
-        return new ResponseEntity<>(country.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(country, HttpStatus.OK);
+    }
+
+    @RequestMapping("/id/{id}")
+    public ResponseEntity<CountryDto> getCountry(@PathVariable Long id) {
+        CountryDto country = countryService.getCountryById(id);
+        return new ResponseEntity<>(country, HttpStatus.OK);
     }
 
     @GetMapping("/all")
