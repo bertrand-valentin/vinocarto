@@ -1,14 +1,14 @@
 import {Component} from '@angular/core';
-import {HomeComponent} from './home/home.component';
 import {HeaderComponent} from './header/header.component';
 import {RouterModule} from '@angular/router';
+import {FooterComponent} from "./footer/footer.component";
 
 @Component({
   selector: 'app-root',
-  imports: [HomeComponent, HeaderComponent, RouterModule],
+  imports: [HeaderComponent, RouterModule, FooterComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'home';
+  title = 'vinocarto';
 }

@@ -8,7 +8,7 @@ import {CardsService} from "../cards.service";
   selector: 'app-home',
   imports: [CardComponent, NgForOf],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   cardList: Card[] = [];

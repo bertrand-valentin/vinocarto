@@ -1,12 +1,19 @@
-<article>
-    <img
-            class="listing-photo"
-            ngSrc="{{card.photo}}"
-            width="400" height="200"
-            alt="Exterior photo of {{ card.name }}"
-            crossorigin/>
-    <section class="listing-description">
-        <h2 class="listing-heading">{{ card.name }}</h2>
-        <p class="listing-location">{{ card.type }}</p>
-    </section>
-</article>
+<div class="container">
+    <div class="menu-bar">
+        <h6 class="appellation">{{ card.name }}</h6>
+        <div class="game-mode">
+            <div class="game-name">Mode de jeu  <mat-icon class="menu-icon">sports_esports</mat-icon></div>
+            <mat-form-field class="game-mode-panel">
+                <mat-select disableRipple [(ngModel)]="selectedValue">
+                    <mat-option *ngFor="let option of options" [value]="option.value">
+                        {{ option.label }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="map">
+        <point-and-click *ngIf="selectedValue === 'pointAndClick'" [svgPath]="card.photo"></point-and-click>
+        <find-all *ngIf="selectedValue === 'findAll'" [svgPath]="card.photo"></find-all>
+    </div>
+</div>

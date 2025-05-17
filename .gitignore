@@ -23,3 +23,4 @@ mvnw*
 *-local.properties
 .DS_Store
 .mvn
+/vinocarto-front/node_modules/

@@ -1,10 +1,13 @@
-<main>
-    <a [routerLink]="['/']">
-        <header class="brand-name">
-            <app-header></app-header>
-        </header>
-    </a>
-    <section class="content">
-        <router-outlet></router-outlet>
-    </section>
-</main>
+<div class="page">
+    <header class="brand-name">
+        <app-header></app-header>
+    </header>
+    <main>
+        <section class="content">
+            <router-outlet></router-outlet>
+        </section>
+    </main>
+    <footer>
+        <app-footer></app-footer>
+    </footer>
+</div>

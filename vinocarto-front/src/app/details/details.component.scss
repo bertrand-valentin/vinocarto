@@ -1,0 +1,60 @@
+.appellation {
+    font-size: 3vh;
+    margin: 0 2vh;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+.map {
+    width: 100%;
+    height: 80vh;
+    align-content: center;
+}
+
+.container {
+    margin-top: 0;
+}
+
+.menu-bar {
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: var(--secondary-color);
+    height: 5vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.game-mode {
+    margin-right: 2vh;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-self: center;
+    justify-content: flex-end;
+}
+
+.game-mode-panel {
+    margin: 0 2vh;
+    font-size: 2vh;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.game-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5vh;
+    font-size: 2vh;
+    color: white;
+}
+
+.menu-icon {
+    font-size: 2vh;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+}

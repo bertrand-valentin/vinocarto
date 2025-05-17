@@ -1,0 +1,47 @@
+<div class="point-and-click">
+    <div class="svg">
+        <div class="svg-wrapper" [innerHTML]="svgContent"></div>
+        <div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
+    </div>
+    <div class="side">
+        <div class="side-title">Point and Click</div>
+        <div class="side-text">En mode point and click, vous devez retrouver l'appelation indiquée en cliquant dessus
+            sur la carte.
+            Cliquez sur le bouton suivant pour démarrer le jeu.
+            <div class="timer-display">{{ elapsedTime | date:'mm:ss' }}</div>
+            <div class="start-button">
+                <button *ngIf="!this.gameStarted" mat-fab extended (click)="startGame()">
+                    <mat-icon>play_circle</mat-icon>
+                    Start
+                </button>
+                <button *ngIf="this.gameStarted && !this.gamePaused" mat-fab extended (click)="pauseGame()">
+                    <mat-icon>pause_circle</mat-icon>
+                    Pause
+                </button>
+                <button *ngIf="this.gameStarted && this.gamePaused" mat-fab extended (click)="resumeGame()">
+                    <mat-icon>replay</mat-icon>
+                    Reprendre
+                </button>
+                <button *ngIf="this.gameStarted" mat-fab extended (click)="endGame()">
+                    <mat-icon>stop</mat-icon>
+                    Terminer
+                </button>
+            </div>
+        </div>
+        <div class="side-text" *ngIf="this.gameStarted && !this.gamePaused">
+            <mat-card appearance="outlined">
+                <div class=card-title>
+                    <mat-card-header>
+                        {{ this.searchLabel }}
+                    </mat-card-header>
+                </div>
+            </mat-card>
+            <div class="score-display">Temps écoulé : {{ this.elapsedTime | date:'mm:ss' }}</div>
+            <div class="score-display" *ngIf="this.errorCount > 0">
+                <div class="error-row">
+                    <span class="score-display">Erreurs : {{ this.errorCount }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+.svg-wrapper {
+    width: 80vw;
+    height: 80vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: left;
+    margin-left: 10vw;
+}
+
+.svg-wrapper svg {
+    object-fit: contain;
+}
