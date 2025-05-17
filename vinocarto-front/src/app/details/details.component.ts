@@ -8,6 +8,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {FindAllComponent} from "../find-all/find-all.component";
+import {PreferencesService} from "../utils/preferences.service";
 
 @Component({
     selector: 'app-details',
@@ -35,7 +36,7 @@ export class DetailsComponent implements OnInit {
         {label: 'leçon', value: 'lesson'}
     ];
 
-    constructor() {
+    constructor(private preferenceService: PreferencesService,) {
         this.cardId = Number(this.route.snapshot.params['id']);
         this.card = {id: this.cardId, name: '', type: '', photo: ''};
     }
@@ -43,10 +44,13 @@ export class DetailsComponent implements OnInit {
     ngOnInit(): void {
         this.cardService.getCountryById(this.cardId).then(
             card => {
-                console.log(card);
                 this.card = card;
                 this.card.photo = this.cardService.mapsUrl + '/' + card.name.toLowerCase() + '.svg'
+                this.selectedValue = this.preferenceService.getGameMode() ?? this.options[0].value;
             });
-        this.selectedValue = this.options[0].value;
+    }
+
+    onGameModeChange(option: string) {
+        this.preferenceService.setGameMode(option);
     }
 }

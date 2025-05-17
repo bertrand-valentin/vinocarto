@@ -4,7 +4,7 @@
         <div class="game-mode">
             <div class="game-name">Mode de jeu  <mat-icon class="menu-icon">sports_esports</mat-icon></div>
             <mat-form-field class="game-mode-panel">
-                <mat-select disableRipple [(ngModel)]="selectedValue">
+                <mat-select disableRipple [(ngModel)]="selectedValue" (selectionChange)="onGameModeChange($event.value)">
                     <mat-option *ngFor="let option of options" [value]="option.value">
                         {{ option.label }}
                     </mat-option>

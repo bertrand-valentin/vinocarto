@@ -1,2 +1,86 @@
-<div class="svg-wrapper" [innerHTML]="svgContent"></div>
-<div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
+<div class="find-all">
+    <div class="svg">
+        <div class="svg-wrapper" [innerHTML]="svgContent"></div>
+        <div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
+    </div>
+    <div class="side">
+        <div class="side-title">Find All</div>
+        <div class="side-text">En mode find all, vous devez retrouver tous les noms des appellations affichées sur la
+            carte.
+            Cliquez sur le bouton suivant pour démarrer le jeu.
+            <div class="timer-display">{{ elapsedTime | date:'mm:ss' }}</div>
+            <div class="start-button">
+                <button *ngIf="!this.gameStarted" mat-fab extended (click)="startGame()">
+                    <mat-icon>play_circle</mat-icon>
+                    Start
+                </button>
+                <button *ngIf="this.gameStarted && !this.gamePaused &&!this.gameEnded" mat-fab extended
+                        (click)="pauseGame()">
+                    <mat-icon>pause_circle</mat-icon>
+                    Pause
+                </button>
+                <button *ngIf="this.gameStarted && this.gamePaused && !this.gameEnded" mat-fab extended
+                        (click)="resumeGame()">
+                    <mat-icon>replay</mat-icon>
+                    Reprendre
+                </button>
+                <button *ngIf="this.gameStarted &&!this.gameEnded" mat-fab extended (click)="endGame()">
+                    <mat-icon>stop</mat-icon>
+                    Terminer
+                </button>
+                <button *ngIf="this.gameEnded" mat-fab extended (click)="clearGame()">
+                    <mat-icon>close</mat-icon>
+                    Quitter le jeu
+                </button>
+            </div>
+        </div>
+        <div class="side-text" *ngIf="this.gameStarted && !this.gamePaused">
+            <mat-form-field class="example-form-field" *ngIf="!this.gameEnded" appearance="outline">
+                <input matInput type="text" [(ngModel)]="enteredLabel" (keydown.enter)="submitValue(enteredLabel)"
+                       placeholder="Appellation">
+                @if (enteredLabel) {
+                    <button matSuffix mat-icon-button aria-label="Clear" (click)="enteredLabel=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
+            </mat-form-field>
+            <div class="score-display">
+                <div class="error-row" *ngIf="this.gameStarted">
+                    <span class="score-display">Reste : {{ this.remainingLabels.length }}
+                        / {{ this.results.data.length }}</span>
+                </div>
+                <div class="error-row" *ngIf="this.errorCount > 0 && !this.gameEnded">
+                    <span class="score-display">Erreurs : {{ this.errorCount }}</span>
+                </div>
+            </div>
+            <div class="score-display" *ngIf="this.gameStarted && !this.gamePaused">
+                <section class="example-container mat-elevation-z8" tabindex="0">
+                    <table mat-table [dataSource]="this.results" matSort>
+                        <ng-container matColumnDef="appellation">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Appellation</th>
+                            <td mat-cell *matCellDef="let result"><span
+                                    [ngClass]="{'text-hidden': result.isHidden && !gameEnded,
+                                                'text-red': !result.isCorrect && gameEnded}">
+                                {{ result.appellation }}</span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="timestamp">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Timing</th>
+                            <td mat-cell *matCellDef="let result"><span
+                                    [ngClass]="{ 'text-hidden': result.isHidden }"> {{ result.timestamp | date:'mm:ss' }}</span>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </section>
+            </div>
+        </div>
+        <div class="confetti-container" *ngIf="showConfetti">
+            <div class="confetti" *ngFor="let c of confettiArray" [ngStyle]="{
+            left: c.left + '%',
+            backgroundColor: c.color,
+            animationDelay: c.delay + 's'}"></div>
+        </div>
+    </div>
+</div>

@@ -36,7 +36,6 @@
                     </mat-card-header>
                 </div>
             </mat-card>
-            <div class="score-display">Temps écoulé : {{ this.elapsedTime | date:'mm:ss' }}</div>
             <div class="score-display" *ngIf="this.errorCount > 0">
                 <div class="error-row">
                     <span class="score-display">Erreurs : {{ this.errorCount }}</span>
