@@ -24,3 +24,4 @@ mvnw*
 .DS_Store
 .mvn
 /vinocarto-front/node_modules/
+/vinocarto-front/.angular/
