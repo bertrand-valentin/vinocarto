@@ -8,6 +8,6 @@ export class StringUtilsService {
   constructor() { }
 
   sanitize(str: string) {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace("-"," ").trim().toLowerCase();
   }
 }

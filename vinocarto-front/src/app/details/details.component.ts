@@ -38,13 +38,15 @@ export class DetailsComponent implements OnInit {
 
     constructor(private preferenceService: PreferencesService,) {
         this.cardId = Number(this.route.snapshot.params['id']);
-        this.card = {id: this.cardId, name: '', type: '', photo: ''};
+        this.card = {id: this.cardId, name: '', type: '', photo: '', appellation: '', country: '', region: ''};
     }
 
     ngOnInit(): void {
-        this.cardService.getCountryById(this.cardId).then(
+        this.cardService.getDetailById(this.cardId).then(
             card => {
                 this.card = card;
+                this.card.name = this.cardService.getCardNameFromType(card);
+                console.log(this.card);
                 this.card.photo = this.cardService.mapsUrl + '/' + card.name.toLowerCase() + '.svg'
                 this.selectedValue = this.preferenceService.getGameMode() ?? this.options[0].value;
             });

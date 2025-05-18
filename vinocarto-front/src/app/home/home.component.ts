@@ -16,10 +16,11 @@ export class HomeComponent implements OnInit {
   cardService: CardsService = inject(CardsService);
 
   ngOnInit() {
-    this.cardService.getAllCountries().then(
+    this.cardService.getAllDetails().then(
         cards => {
+            console.log(cards);
           for (const card of cards) {
-            card.type = 'Country';
+            card.name = this.cardService.getCardNameFromType(card);
             card.photo = this.cardService.mapsUrl + '/' + card.name.toLowerCase() + '.svg';
           }
           this.cardList = cards;

@@ -53,6 +53,7 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
     private pauseOffset = 0;
     private labelMap = new Map<string, Element[]>();
     remainingLabels: string[] = [];
+    allLabels: string[] = [];
     results = new MatTableDataSource<Result>();
     enteredLabel: string = '';
     errorCount = 0;
@@ -60,11 +61,20 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
     confettiArray: { left: number, color: string, delay: number }[] = [];
 
 
+    @ViewChild(MatSort, {static: false}) sort!: MatSort;
+
     ngOnChanges(changes: SimpleChanges) {
         if (changes['svgPath'] && changes['svgPath'].currentValue) {
             this.loadSvg();
         }
     }
+
+    ngAfterViewChecked() {
+        if (this.sort && !this.results.sort) {
+            this.results.sort = this.sort;
+        }
+    }
+
 
     private loadSvg() {
         this.http.get(this.svgPath, {responseType: 'text'}).subscribe({
@@ -104,6 +114,7 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         this.errorCount = 0;
         this.startTimerLoop();
         this.remainingLabels = Array.from(this.labelMap.keys());
+        this.allLabels = Array.from(this.labelMap.keys());
         const resultList: Result[] = this.remainingLabels.map(label => ({
             appellation: label,
             label: this.stringUtils.sanitize(label),
@@ -114,7 +125,6 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         resultList.sort((a, b) => a.appellation.localeCompare(b.appellation));
         this.results.data = resultList;
         this.remainingLabels = this.remainingLabels.map(label => this.stringUtils.sanitize(label));
-        this.labelMap = this.sanitizeLabels(this.labelMap);
         this.results.sort = this.sort;
     }
 
@@ -173,7 +183,10 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
                 this.results.data[index].isHidden = false;
                 this.results.data[index].isCorrect = true;
                 this.results.data = [...this.results.data];
-                this.labelMap.get(this.enteredLabel)?.forEach(path => path.setAttribute('opacity', '0.2'));
+                let mapEntyLabel = this.allLabels.find(l => this.stringUtils.sanitize(l) === this.enteredLabel);
+                if (mapEntyLabel) {
+                    this.labelMap.get(mapEntyLabel)?.forEach(path => path.setAttribute('opacity', '0.2'));
+                }
                 this.remainingLabels = this.remainingLabels.filter(l => l !== this.enteredLabel);
                 this.enteredLabel = '';
                 if (this.remainingLabels.length === 0) {
@@ -182,24 +195,15 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
                 }
             } else {
                 this.enteredLabel = '';
-                if(index <= 0) {
+                if (index <= 0) {
                     this.errorCount += 1;
                 }
             }
         }
     }
 
-    private sanitizeLabels(labelMap: Map<string, Element[]>): Map<string, Element[]> {
-        const sanitizedMap = new Map<string, Element[]>();
-        labelMap.forEach((paths, label) => {
-            const sanitizedLabel = this.stringUtils.sanitize(label);
-            sanitizedMap.set(sanitizedLabel, paths);
-        });
-        return sanitizedMap;
-    }
-
     triggerConfetti() {
-        this.confettiArray = Array.from({ length: 30 }, () => ({
+        this.confettiArray = Array.from({length: 30}, () => ({
             left: Math.random() * 100,
             color: `hsl(${Math.floor(Math.random() * 360)}, 100%, 70%)`,
             delay: Math.random() * 1.5,
@@ -210,13 +214,5 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         setTimeout(() => {
             this.showConfetti = false;
         }, 3000);
-    }
-
-    @ViewChild(MatSort, { static: false }) sort!: MatSort;
-
-    ngAfterViewChecked() {
-        if (this.sort && !this.results.sort) {
-            this.results.sort = this.sort;
-        }
     }
 }

@@ -1,0 +1,26 @@
+package com.bva.backend_services.service;
+
+import com.bva.maria_persistence.entities.Detail;
+import com.bva.maria_persistence.repository.DetailRepository;
+import com.bva.vinocarto_core.model.DetailDto;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class DetailService {
+
+    private final DetailRepository detailRepository;
+
+    public DetailService(DetailRepository detailRepository) {
+        this.detailRepository = detailRepository;
+    }
+
+    public DetailDto getDetailById(Long id) {
+        return detailRepository.getReferenceById(id).toDto();
+    }
+
+    public List<DetailDto> getAllDetails() {
+        return detailRepository.findAll().stream().map(Detail::toDto).toList();
+    }
+}

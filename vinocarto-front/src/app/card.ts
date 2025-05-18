@@ -3,4 +3,7 @@ export interface Card {
     name: string;
     type: string;
     photo: any;
+    appellation: string;
+    region: string;
+    country: string;
 }

@@ -11,13 +11,20 @@ export class CardsService {
   readonly mapsUrl = '/assets/maps';
   url = 'http://localhost:8080';
 
-  async getAllCountries(): Promise<Card[]> {
-    const data = await fetch(this.url + '/country/all');
+  async getAllDetails(): Promise<Card[]> {
+    const data = await fetch(this.url + '/detail/all');
     return (await data.json()) ?? [];
   }
-  async getCountryById(id: number): Promise<Card> {
-    const data = await fetch(this.url + '/country/id/' + id);
+
+  async getDetailById(id: number): Promise<Card> {
+    const data = await fetch(this.url + '/detail/id/' + id);
     return data.json();
+  }
+
+  getCardNameFromType(card: Card): string {
+    return card.type === 'COUNTRY' ? card.country :
+        card.type === 'REGION' ? card.region :
+            card.appellation;
   }
 
 }
