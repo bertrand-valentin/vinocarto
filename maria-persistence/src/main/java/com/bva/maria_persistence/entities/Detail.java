@@ -24,13 +24,16 @@ public class Detail {
     @Column(name = "TYPE")
     @Enumerated(EnumType.ORDINAL)
     private DetailType type;
+    @Column(name="MAP_READY")
+    private boolean mapReady;
 
-    public Detail(Long id, Region region, Country country, Appellation appellation, DetailType type) {
+    public Detail(Long id, Region region, Country country, Appellation appellation, DetailType type, boolean mapReady) {
         this.id = id;
         this.region = region;
         this.country = country;
         this.appellation = appellation;
         this.type = type;
+        this.mapReady = mapReady;
     }
 
     public Detail() {
@@ -85,6 +88,7 @@ public class Detail {
         sb.append(", country=").append(country);
         sb.append(", appellation=").append(appellation);
         sb.append(", type=").append(type);
+        sb.append(", mapReady=").append(mapReady);
         sb.append('}');
         return sb.toString();
     }
@@ -95,7 +99,8 @@ public class Detail {
               this.getRegion() != null ? this.region.getName() : "",
               this.getCountry() != null ? this.getCountry().getName() : "",
               this.type.name(),
-              this.getAppellation() != null ? this.getAppellation().getName() : ""
+              this.getAppellation() != null ? this.getAppellation().getName() : "",
+              this.mapReady
         );
     }
 
@@ -106,6 +111,6 @@ public class Detail {
         region.setName(dto.getRegion());
         country.setName(dto.getCountry());
         appellation.setName(dto.getAppellation());
-        return new Detail(dto.getId(), region, country, appellation, DetailType.valueOf(dto.getType().toUpperCase()));
+        return new Detail(dto.getId(), region, country, appellation, DetailType.valueOf(dto.getType().toUpperCase()), dto.isMapReady());
     }
 }

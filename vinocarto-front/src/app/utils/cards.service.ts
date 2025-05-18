@@ -23,7 +23,7 @@ export class CardsService {
 
   getCardNameFromType(card: Card): string {
     return card.type === 'COUNTRY' ? card.country :
-        card.type === 'REGION' ? card.region :
+           card.type === 'REGION' ? card.region :
             card.appellation;
   }
 

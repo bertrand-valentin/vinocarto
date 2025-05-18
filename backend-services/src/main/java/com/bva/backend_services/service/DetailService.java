@@ -20,7 +20,7 @@ public class DetailService {
         return detailRepository.getReferenceById(id).toDto();
     }
 
-    public List<DetailDto> getAllDetails() {
-        return detailRepository.findAll().stream().map(Detail::toDto).toList();
+    public List<DetailDto> getAllDetailsWithMapReady() {
+        return detailRepository.findAllByMapReadyTrue().stream().map(Detail::toDto).toList();
     }
 }

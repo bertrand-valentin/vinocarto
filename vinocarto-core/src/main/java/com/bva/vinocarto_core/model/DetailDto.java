@@ -7,13 +7,15 @@ public class DetailDto {
     private String country;
     private String type;
     private String appellation;
+    private boolean mapReady;
 
-    public DetailDto(Long id, String region, String country, String type, String appellation) {
+    public DetailDto(Long id, String region, String country, String type, String appellation, boolean mapReady) {
         this.id = id;
         this.region = region;
         this.country = country;
         this.type = type;
         this.appellation = appellation;
+        this.mapReady = mapReady;
     }
 
     public Long getId() {
@@ -48,6 +50,14 @@ public class DetailDto {
         this.type = type;
     }
 
+    public boolean isMapReady() {
+        return mapReady;
+    }
+
+    public void setMapReady(boolean mapReady) {
+        this.mapReady = mapReady;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DetailDto{");
@@ -56,6 +66,7 @@ public class DetailDto {
         sb.append(", country='").append(country).append('\'');
         sb.append(", type='").append(type).append('\'');
         sb.append(", appellation='").append(appellation).append('\'');
+        sb.append(", mapReady=").append(mapReady);
         sb.append('}');
         return sb.toString();
     }

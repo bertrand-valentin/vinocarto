@@ -1,7 +1,6 @@
 package com.bva.backend_services.controller;
 
 import com.bva.backend_services.service.DetailService;
-import com.bva.vinocarto_core.model.CountryDto;
 import com.bva.vinocarto_core.model.DetailDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +26,5 @@ public class DetailController {
     }
 
     @GetMapping("/all")
-    public List<DetailDto> getAllDetails() {return detailService.getAllDetails();}
+    public List<DetailDto> getAllDetailsWithMapReady() {return detailService.getAllDetailsWithMapReady();}
 }
