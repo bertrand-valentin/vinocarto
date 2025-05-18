@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {CardComponent} from "../card/card.component";
 import {Card} from "../card";
 import {NgForOf} from "@angular/common";
-import {CardsService} from "../cards.service";
+import {CardsService} from "../utils/cards.service";
 
 @Component({
   selector: 'app-home',

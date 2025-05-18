@@ -14,17 +14,21 @@
                     <mat-icon>play_circle</mat-icon>
                     Start
                 </button>
-                <button *ngIf="this.gameStarted && !this.gamePaused" mat-fab extended (click)="pauseGame()">
+                <button *ngIf="this.gameStarted && !this.gamePaused &&!this.gameEnded" mat-fab extended (click)="pauseGame()">
                     <mat-icon>pause_circle</mat-icon>
                     Pause
                 </button>
-                <button *ngIf="this.gameStarted && this.gamePaused" mat-fab extended (click)="resumeGame()">
+                <button *ngIf="this.gameStarted && this.gamePaused && !this.gameEnded" mat-fab extended (click)="resumeGame()">
                     <mat-icon>replay</mat-icon>
                     Reprendre
                 </button>
-                <button *ngIf="this.gameStarted" mat-fab extended (click)="endGame()">
+                <button *ngIf="this.gameStarted && !this.gameEnded" mat-fab extended (click)="endGame()">
                     <mat-icon>stop</mat-icon>
                     Terminer
+                </button>
+                <button *ngIf="this.gameEnded" mat-fab extended (click)="clearGame()">
+                    <mat-icon>close</mat-icon>
+                    Quitter le jeu
                 </button>
             </div>
         </div>
@@ -42,5 +46,11 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="confetti-container" *ngIf="showConfetti">
+        <div class="confetti" *ngFor="let c of confettiArray" [ngStyle]="{
+            left: c.left + '%',
+            backgroundColor: c.color,
+            animationDelay: c.delay + 's'}"></div>
     </div>
 </div>

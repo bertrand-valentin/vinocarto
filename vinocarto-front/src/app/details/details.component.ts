@@ -1,13 +1,13 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {CardsService} from '../cards.service';
+import {CardsService} from '../utils/cards.service';
 import {Card} from "../card";
-import {PointAndClickComponent} from "../point-and-click/point-and-click.component";
+import {PointAndClickComponent} from "../game-mode/point-and-click/point-and-click.component";
 import {MatIcon} from "@angular/material/icon";
 import {MatSelectModule} from '@angular/material/select';
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {FindAllComponent} from "../find-all/find-all.component";
+import {FindAllComponent} from "../game-mode/find-all/find-all.component";
 import {PreferencesService} from "../utils/preferences.service";
 
 @Component({

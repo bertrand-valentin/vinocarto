@@ -1,11 +1,10 @@
 import {
-    AfterViewChecked,
     Component,
     ElementRef,
     Input,
     OnChanges,
     Renderer2,
-    SimpleChanges, ViewChild,
+    SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -13,74 +12,52 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {HttpClient} from '@angular/common/http';
 import {MatIcon} from "@angular/material/icon";
 import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
-import {MatInputModule} from '@angular/material/input';
-import {FormsModule} from "@angular/forms";
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {StringUtilsService} from "../utils/string-utils.service";
-
-export interface Result {
-    appellation: string;
-    label: string;
-    timestamp: number;
-    isHidden: boolean;
-    isCorrect: boolean;
-}
 
 @Component({
-    selector: 'find-all',
-    imports: [CommonModule, MatIcon, MatButtonModule, MatListModule, MatInputModule, FormsModule, MatTableModule, MatSortModule],
-    templateUrl: './find-all.component.html',
-    styleUrls: ['./find-all.component.scss'],
+    selector: 'point-and-click',
+    imports: [CommonModule, MatIcon, MatButtonModule, MatCardModule, MatListModule],
+    templateUrl: './point-and-click.component.html',
+    styleUrls: ['./point-and-click.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class FindAllComponent implements OnChanges, AfterViewChecked {
+export class PointAndClickComponent implements OnChanges {
 
-    constructor(private http: HttpClient, private sanitizer: DomSanitizer, private el: ElementRef, private renderer: Renderer2, private stringUtils: StringUtilsService) {
+    constructor(private http: HttpClient, private sanitizer: DomSanitizer, private el: ElementRef, private renderer: Renderer2) {
     }
 
     @Input() svgPath!: string;
     svgContent: SafeHtml = '';
+    hoveredLabel: string | null = null;
     gameStarted = false;
     gamePaused = false;
     gameEnded = false;
     gameWon = false;
-    showConfetti = false;
     elapsedTime: number = 0;
+    showConfetti = false;
+    confettiArray: { left: number, color: string, delay: number }[] = [];
     private timerInterval: any = null;
     private startTimestamp = 0;
     private pauseOffset = 0;
     private labelMap = new Map<string, Element[]>();
-    remainingLabels: string[] = [];
-    allLabels: string[] = [];
-    results = new MatTableDataSource<Result>();
-    enteredLabel: string = '';
+    private remainingLabels: string[] = [];
+    searchLabel: string = '';
     errorCount = 0;
-    displayedColumns: string[] = ['appellation', 'timestamp'];
-    confettiArray: { left: number, color: string, delay: number }[] = [];
 
-
-    @ViewChild(MatSort, {static: false}) sort!: MatSort;
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['svgPath'] && changes['svgPath'].currentValue) {
+            console.log(`Chargement du SVG: ${this.svgPath}`);
             this.loadSvg();
         }
     }
-
-    ngAfterViewChecked() {
-        if (this.sort && !this.results.sort) {
-            this.results.sort = this.sort;
-        }
-    }
-
 
     private loadSvg() {
         this.http.get(this.svgPath, {responseType: 'text'}).subscribe({
             next: (svg) => {
                 this.svgContent = this.sanitizer.bypassSecurityTrustHtml(svg);
-                setTimeout(() => this.setupSvg(), 0);
+                setTimeout(() => this.setupListeners(), 0);
             },
             error: (err) => {
                 console.error(`Erreur lors du chargement du SVG: ${this.svgPath}`, err);
@@ -89,7 +66,7 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         });
     }
 
-    private setupSvg() {
+    private setupListeners() {
         const svgWrapper: HTMLElement = this.el.nativeElement.querySelector('.svg-wrapper');
         if (!svgWrapper) return;
 
@@ -104,6 +81,27 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
             }
             this.labelMap.get(label)?.push(path);
         });
+
+        this.labelMap.forEach((paths, label) => {
+            paths.forEach(path => {
+                this.renderer.listen(path, 'mouseenter', () => {
+                    paths.forEach(p => this.renderer.setStyle(p, 'opacity', '0.5'));
+                    this.hoveredLabel = label;
+                });
+
+                this.renderer.listen(path, 'mouseleave', () => {
+                    paths.forEach(p => this.renderer.removeStyle(p, 'opacity'));
+                    this.hoveredLabel = null;
+                });
+
+                this.renderer.listen(path, 'click', () => {
+                    const label = path.getAttribute('data-label');
+                    if (label) {
+                        this.onZoneClick(label);
+                    }
+                });
+            });
+        });
     }
 
     startGame() {
@@ -114,18 +112,7 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         this.errorCount = 0;
         this.startTimerLoop();
         this.remainingLabels = Array.from(this.labelMap.keys());
-        this.allLabels = Array.from(this.labelMap.keys());
-        const resultList: Result[] = this.remainingLabels.map(label => ({
-            appellation: label,
-            label: this.stringUtils.sanitize(label),
-            timestamp: 0,
-            isHidden: true,
-            isCorrect: false
-        }));
-        resultList.sort((a, b) => a.appellation.localeCompare(b.appellation));
-        this.results.data = resultList;
-        this.remainingLabels = this.remainingLabels.map(label => this.stringUtils.sanitize(label));
-        this.results.sort = this.sort;
+        this.searchLabel = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
     }
 
     pauseGame() {
@@ -146,7 +133,8 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         const minutes = Math.floor(this.elapsedTime / 60000);
         const seconds = Math.floor((this.elapsedTime % 60000) / 1000);
         this.gameEnded = true;
-        if (this.remainingLabels.length === 0) {
+        if(this.remainingLabels.length === 0) {
+            console.log('game won');
             this.gameWon = true;
             this.triggerConfetti();
         }
@@ -162,8 +150,6 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         this.pauseOffset = 0;
         this.errorCount = 0;
         clearInterval(this.timerInterval);
-        this.results.data = [];
-        this.remainingLabels = [];
         this.labelMap.forEach(label => label.forEach(path => path.setAttribute('opacity', '1')));
     }
 
@@ -174,30 +160,20 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         }, 1000);
     }
 
-    submitValue(enteredLabel: string) {
-        this.enteredLabel = this.stringUtils.sanitize(enteredLabel);
-        if (this.gameStarted && !this.gamePaused) {
-            let index = this.results.data.findIndex(r => r.label === this.enteredLabel);
-            if (this.remainingLabels.includes(this.enteredLabel)) {
-                this.results.data[index].timestamp = this.elapsedTime;
-                this.results.data[index].isHidden = false;
-                this.results.data[index].isCorrect = true;
-                this.results.data = [...this.results.data];
-                let mapEntyLabel = this.allLabels.find(l => this.stringUtils.sanitize(l) === this.enteredLabel);
-                if (mapEntyLabel) {
-                    this.labelMap.get(mapEntyLabel)?.forEach(path => path.setAttribute('opacity', '0.2'));
-                }
-                this.remainingLabels = this.remainingLabels.filter(l => l !== this.enteredLabel);
-                this.enteredLabel = '';
+    private onZoneClick(label: string) {
+        if(this.gameStarted && !this.gamePaused) {
+            console.log(label, this.searchLabel);
+            if(label === this.searchLabel) {
+                this.remainingLabels = this.remainingLabels.filter(l => l !== label);
+                this.labelMap.get(label)?.forEach(path => path.setAttribute('opacity', '0.2'));
                 if (this.remainingLabels.length === 0) {
-                    this.gameEnded = true;
                     this.endGame();
+                } else {
+                    this.searchLabel = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
                 }
-            } else {
-                this.enteredLabel = '';
-                if (index <= 0) {
-                    this.errorCount += 1;
-                }
+            }
+            else {
+                this.errorCount += 1;
             }
         }
     }
