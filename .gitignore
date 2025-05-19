@@ -1,6 +1,5 @@
 HELP.md
 target/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -21,6 +20,5 @@ target/
 
 *-local.properties
 .DS_Store
-.mvn
 /vinocarto-front/node_modules/
 /vinocarto-front/.angular/
