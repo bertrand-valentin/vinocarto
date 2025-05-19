@@ -17,7 +17,7 @@
 	</properties>
 
 	<modules>
-		<module>maria-persistence</module>
+		<module>persistence</module>
 		<module>vinocarto-core</module>
 		<module>backend-services</module>
 	</modules>

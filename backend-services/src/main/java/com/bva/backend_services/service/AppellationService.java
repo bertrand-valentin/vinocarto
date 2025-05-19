@@ -1,7 +1,7 @@
 package com.bva.backend_services.service;
 
-import com.bva.maria_persistence.entities.Appellation;
-import com.bva.maria_persistence.repository.AppellationRepository;
+import com.bva.persistence.entities.Appellation;
+import com.bva.persistence.repository.AppellationRepository;
 import com.bva.vinocarto_core.model.AppellationDto;
 import com.bva.vinocarto_core.model.Colour;
 import org.springframework.stereotype.Service;

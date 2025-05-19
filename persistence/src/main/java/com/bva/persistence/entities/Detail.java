@@ -1,4 +1,4 @@
-package com.bva.maria_persistence.entities;
+package com.bva.persistence.entities;
 
 import com.bva.vinocarto_core.model.DetailDto;
 import com.bva.vinocarto_core.model.DetailType;

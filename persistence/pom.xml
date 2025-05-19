@@ -7,12 +7,18 @@
 		<artifactId>vinocarto</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>maria-persistence</artifactId>
+	<artifactId>persistence</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>maria-persistence</name>
+	<name>persistence</name>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+	<repositories>
+		<repository>
+			<id>flyway-repo</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.bva</groupId>
@@ -20,9 +26,18 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-			<version>3.3.3</version>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>10.15.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

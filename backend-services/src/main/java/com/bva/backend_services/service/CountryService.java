@@ -1,7 +1,7 @@
 package com.bva.backend_services.service;
 
-import com.bva.maria_persistence.entities.Country;
-import com.bva.maria_persistence.repository.CountryRepository;
+import com.bva.persistence.entities.Country;
+import com.bva.persistence.repository.CountryRepository;
 import com.bva.vinocarto_core.model.CountryDto;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.bva.backend_services.service;
 
-import com.bva.maria_persistence.entities.Detail;
-import com.bva.maria_persistence.repository.DetailRepository;
+import com.bva.persistence.entities.Detail;
+import com.bva.persistence.repository.DetailRepository;
 import com.bva.vinocarto_core.model.DetailDto;
 import org.springframework.stereotype.Service;
 

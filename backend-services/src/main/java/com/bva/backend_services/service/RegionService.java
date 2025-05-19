@@ -1,7 +1,7 @@
 package com.bva.backend_services.service;
 
-import com.bva.maria_persistence.entities.Region;
-import com.bva.maria_persistence.repository.RegionRepository;
+import com.bva.persistence.entities.Region;
+import com.bva.persistence.repository.RegionRepository;
 import com.bva.vinocarto_core.model.RegionDto;
 import org.springframework.stereotype.Service;
 

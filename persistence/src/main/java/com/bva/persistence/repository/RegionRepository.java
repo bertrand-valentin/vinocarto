@@ -1,6 +1,6 @@
-package com.bva.maria_persistence.repository;
+package com.bva.persistence.repository;
 
-import com.bva.maria_persistence.entities.Region;
+import com.bva.persistence.entities.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
