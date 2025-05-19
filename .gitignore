@@ -19,7 +19,6 @@ target/
 *.iml
 *.ipr
 
-mvnw*
 *-local.properties
 .DS_Store
 .mvn
