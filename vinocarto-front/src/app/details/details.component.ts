@@ -33,12 +33,13 @@ export class DetailsComponent implements OnInit {
         {label: 'point and click', value: 'pointAndClick'},
         {label: 'find all', value: 'findAll'},
         {label: 'recherche forcée', value: 'forcedSearch'},
-        {label: 'leçon', value: 'lesson'}
+        {label: 'leçon', value: 'lesson'},
+        {label: 'recherche par type', value: 'typeSearch'}
     ];
 
     constructor(private preferenceService: PreferencesService,) {
         this.cardId = Number(this.route.snapshot.params['id']);
-        this.card = {id: this.cardId, name: '', type: '', photo: '', appellation: '', country: '', region: ''};
+        this.card = {id: this.cardId, name: '', type: '', photo: '', appellation: '', country: '', region: '', countryPicture: '', description:''};
     }
 
     ngOnInit(): void {
@@ -46,7 +47,6 @@ export class DetailsComponent implements OnInit {
             card => {
                 this.card = card;
                 this.card.name = this.cardService.getCardNameFromType(card);
-                console.log(this.card);
                 this.card.photo = this.cardService.mapsUrl + '/' + card.name.toLowerCase() + '.svg'
                 this.selectedValue = this.preferenceService.getGameMode() ?? this.options[0].value;
             });

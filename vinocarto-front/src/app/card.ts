@@ -6,4 +6,6 @@ export interface Card {
     appellation: string;
     region: string;
     country: string;
+    countryPicture: string;
+    description: string;
 }

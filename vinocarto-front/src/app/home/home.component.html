@@ -1,7 +1,22 @@
 <section>
-    <form>
-        <input type="text" placeholder="Filter by name"  #filter/>
-        <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
+    <form class="search">
+        <input
+                type="text"
+                placeholder="Rechercher une appellation"
+                [(ngModel)]="searchText"
+                name="filter"
+                (ngModelChange)="applyFilter()"
+        />
+
+        <select [(ngModel)]="sortField" name="sortField" (change)="applyFilter()">
+            <option value="name">Nom</option>
+            <option value="type">Type</option>
+            <option value="region">Région</option>
+        </select>
+
+        <button type="button" (click)="toggleSortDirection()">
+            {{ sortAsc ? '▲' : '▼' }}
+        </button>
     </form>
     <section class="results">
         <app-card

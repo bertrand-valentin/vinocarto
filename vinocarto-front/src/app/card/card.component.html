@@ -1,12 +1,23 @@
-<section class="listing">
-    <img
-            class="listing-photo"
-            ngSrc="{{cardContent.photo}}"
-            width="400" height="200"
-            alt="map of {{ cardContent.name }}"
-            crossorigin
-    />
-    <h2 class="listing-heading">{{ cardContent.name }}</h2>
-    <p class="listing-location">{{ cardContent.type }}</p>
-    <a [routerLink]="['/details', cardContent.id]"><br/>Play</a>
-</section>
+<mat-card class="example-card" appearance="outlined">
+    <mat-card-header>
+        <div mat-card-avatar class="example-header-image" [ngStyle]="{ 'background-image': 'url(' + cardContent.countryPicture + ')' }"></div>
+        <mat-card-title>{{ cardContent.name }}</mat-card-title>
+        <mat-card-subtitle>{{ cardContent.type }}</mat-card-subtitle>
+    </mat-card-header>
+    <div class="card-image-wrapper">
+        <img
+                class="card-image"
+                width="1000"
+                height="1000"
+                [ngSrc]="cardContent.photo"
+                [alt]="'map of ' + cardContent.name">
+    </div>
+    <mat-card-content>
+        <p>
+            {{ cardContent.description }}
+        </p>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button [routerLink]="['/details', cardContent.id]">Play</button>
+    </mat-card-actions>
+</mat-card>
