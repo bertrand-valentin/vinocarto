@@ -1,0 +1,3 @@
+INSERT INTO region (ID, NAME, COUNTRY_ID_FK) VALUES (3,'VALLEE DU RHONE', 1);
+INSERT INTO detail(ID, COUNTRY_ID_FK, REGION_ID_FK, APPELLATION_ID_FK, TYPE, MAP_READY, DESCRIPTION) VALUES (5, 1, 3, NULL, 1, true,
+                                                                                                             'La Vallée du Rhône est l’une des plus anciennes régions viticoles de France, s’étendant du sud de Lyon jusqu’à Avignon. Elle est réputée pour ses vins rouges charpentés comme les Côtes-du-Rhône, mais aussi pour ses blancs aromatiques. Sa diversité de terroirs en fait une région riche et contrastée, entre influences septentrionales et méridionales.');

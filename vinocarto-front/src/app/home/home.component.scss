@@ -1,9 +1,14 @@
 .results {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    max-width: 100%;
     gap: 2rem;
     padding: 1rem;
-    max-width: 100%;
+    justify-content: center;
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .search {
@@ -39,10 +44,5 @@
         color: white;
         font-weight: bold;
         cursor: pointer;
-    }
-}
-@media (min-width: 500px) and (max-width: 768px) {
-    .results {
-        grid-template-columns: repeat(2, 1fr);
     }
 }

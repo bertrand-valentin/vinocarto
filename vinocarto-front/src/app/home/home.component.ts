@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
         cards => {
           for (const card of cards) {
             card.name = this.cardService.getCardNameFromType(card);
-            card.photo = this.cardService.mapsUrl + '/' + card.name.toLowerCase() + '.svg';
+            card.photo = this.cardService.mapsUrl + '/' + this.stringService.sanitize(card.name) + '.svg';
             card.countryPicture = this.cardService.mapsUrl + '/' + card.country.toLowerCase() + '.svg';
           }
           this.cardList = cards;

@@ -9,6 +9,7 @@ import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {FindAllComponent} from "../game-mode/find-all/find-all.component";
 import {PreferencesService} from "../utils/preferences.service";
+import {StringUtilsService} from "../utils/string-utils.service";
 
 @Component({
     selector: 'app-details',
@@ -26,6 +27,7 @@ import {PreferencesService} from "../utils/preferences.service";
 export class DetailsComponent implements OnInit {
     route: ActivatedRoute = inject(ActivatedRoute);
     cardService = inject(CardsService);
+    stringService = inject(StringUtilsService);
     card: Card;
     cardId: number;
     selectedValue: string = '';
@@ -37,7 +39,7 @@ export class DetailsComponent implements OnInit {
         {label: 'recherche par type', value: 'typeSearch'}
     ];
 
-    constructor(private preferenceService: PreferencesService,) {
+    constructor(private preferenceService: PreferencesService) {
         this.cardId = Number(this.route.snapshot.params['id']);
         this.card = {id: this.cardId, name: '', type: '', photo: '', appellation: '', country: '', region: '', countryPicture: '', description:''};
     }
@@ -47,7 +49,7 @@ export class DetailsComponent implements OnInit {
             card => {
                 this.card = card;
                 this.card.name = this.cardService.getCardNameFromType(card);
-                this.card.photo = this.cardService.mapsUrl + '/' + card.name.toLowerCase() + '.svg'
+                this.card.photo = this.cardService.mapsUrl + '/' + this.stringService.sanitize(card.name) + '.svg'
                 this.selectedValue = this.preferenceService.getGameMode() ?? this.options[0].value;
             });
     }
