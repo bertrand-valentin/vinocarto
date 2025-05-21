@@ -10,6 +10,7 @@ import {CommonModule} from "@angular/common";
 import {FindAllComponent} from "../game-mode/find-all/find-all.component";
 import {PreferencesService} from "../utils/preferences.service";
 import {StringUtilsService} from "../utils/string-utils.service";
+import {ForcedSearchComponent} from "../game-mode/forced-search/forced-search.component";
 
 @Component({
     selector: 'app-details',
@@ -19,7 +20,8 @@ import {StringUtilsService} from "../utils/string-utils.service";
         MatSelectModule,
         FormsModule,
         CommonModule,
-        FindAllComponent
+        FindAllComponent,
+        ForcedSearchComponent
     ],
     templateUrl: './details.component.html',
     styleUrls: ['./details.component.scss'],

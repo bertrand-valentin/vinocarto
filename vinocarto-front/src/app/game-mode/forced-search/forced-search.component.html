@@ -1,0 +1,58 @@
+<div class="point-and-click">
+    <div class="svg">
+        <div class="svg-wrapper" [innerHTML]="svgContent"></div>
+        <div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
+    </div>
+    <div class="side">
+        <div class="side-title">Recherche Forcée</div>
+        <div class="side-text">En mode recherche forcée, vous devez retrouver l'appelation de la zone clignotante. Vous avez 3 essais
+            et la couleur changera en fonction.
+            Cliquez sur le bouton suivant pour démarrer le jeu.
+            <div class="timer-display">{{ elapsedTime | date:'mm:ss' }}</div>
+            <div class="start-button">
+                <button *ngIf="!this.gameStarted" mat-fab extended (click)="startGame()">
+                    <mat-icon>play_circle</mat-icon>
+                    Start
+                </button>
+                <button *ngIf="this.gameStarted && !this.gamePaused &&!this.gameEnded" mat-fab extended (click)="pauseGame()">
+                    <mat-icon>pause_circle</mat-icon>
+                    Pause
+                </button>
+                <button *ngIf="this.gameStarted && this.gamePaused && !this.gameEnded" mat-fab extended (click)="resumeGame()">
+                    <mat-icon>replay</mat-icon>
+                    Reprendre
+                </button>
+                <button *ngIf="this.gameStarted && !this.gameEnded" mat-fab extended (click)="endGame()">
+                    <mat-icon>stop</mat-icon>
+                    Terminer
+                </button>
+                <button *ngIf="this.gameEnded" mat-fab extended (click)="clearGame()">
+                    <mat-icon>close</mat-icon>
+                    Quitter le jeu
+                </button>
+            </div>
+        </div>
+        <div class="side-text" *ngIf="this.gameStarted && !this.gamePaused">
+            <mat-form-field class="example-form-field" *ngIf="!this.gameEnded" appearance="outline">
+                <input matInput type="text" [(ngModel)]="enteredLabel" (keydown.enter)="submitValue(enteredLabel)"
+                       placeholder="Appellation">
+                @if (enteredLabel) {
+                    <button matSuffix mat-icon-button aria-label="Clear" (click)="enteredLabel=''">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
+            </mat-form-field>
+            <div class="score-display" *ngIf="this.errorCount > 0">
+                <div class="error-row">
+                    <span class="score-display">Erreurs : {{ this.errorCount }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="confetti-container" *ngIf="showConfetti">
+        <div class="confetti" *ngFor="let c of confettiArray" [ngStyle]="{
+            left: c.left + '%',
+            backgroundColor: c.color,
+            animationDelay: c.delay + 's'}"></div>
+    </div>
+</div>

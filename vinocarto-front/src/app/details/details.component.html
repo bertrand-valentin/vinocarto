@@ -14,6 +14,7 @@
     </div>
     <div class="map">
         <point-and-click *ngIf="selectedValue === 'pointAndClick'" [svgPath]="card.photo"></point-and-click>
+        <forced-search *ngIf="selectedValue === 'forcedSearch'" [svgPath]="card.photo"></forced-search>
         <find-all *ngIf="selectedValue === 'findAll'" [svgPath]="card.photo"></find-all>
     </div>
 </div>
