@@ -1,0 +1,6 @@
+INSERT INTO region (ID, NAME, COUNTRY_ID_FK) VALUES (4,'LANGUEDOC ROUSSILLON', 1);
+INSERT INTO appellation (ID, NAME, region_id_fk) VALUES (2,'COTEAUX DU LANGUEDOC', 1);
+INSERT INTO detail(ID, COUNTRY_ID_FK, REGION_ID_FK, APPELLATION_ID_FK, TYPE, MAP_READY, DESCRIPTION) VALUES (6, 1, 4, NULL, 1, true,
+                                                                                                             'Ancrés entre mer Méditerranée et contreforts des Cévennes, les vins du Languedoc-Roussillon expriment une diversité remarquable : rouges puissants aux notes de fruits noirs et de garrigue, blancs frais et floraux, rosés gourmands, et cuvées qui révèlent toute la richesse d’un terroir solaire, façonné par le vent, la pierre et la passion des vignerons.');
+INSERT INTO detail(ID, COUNTRY_ID_FK, REGION_ID_FK, APPELLATION_ID_FK, TYPE, MAP_READY, DESCRIPTION) VALUES (7, 1, 4, 2, 2, true,
+                                                                                                             'Née sur des sols variés entre mer et garrigue, l’appellation Coteaux du Languedoc offre des vins de caractère, alliant la générosité du climat méditerranéen à la complexité de cépages nobles : rouges structurés aux arômes de fruits mûrs et d’épices, blancs élégants et expressifs, pour des cuvées à la fois authentiques et pleines de relief.');

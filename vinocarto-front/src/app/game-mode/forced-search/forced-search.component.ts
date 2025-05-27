@@ -184,10 +184,10 @@ export class ForcedSearchComponent implements OnChanges {
                 if (mapEntyLabel) {
                     this.labelMap.get(mapEntyLabel)?.forEach(path=> {
                         path.setAttribute('fill', this.colorMap[this.appellationErrorCount]);
-                        path.setAttribute('opacity', '0,2');
                         (path as HTMLElement).style.fill = this.colorMap[this.appellationErrorCount];
+                        path.setAttribute('opacity', '0,2');
+                        path.classList.remove('blinking')
                     });
-                    this.labelMap.get(this.searchLabel)?.forEach(path => path.classList.remove('blinking'));
                     this.appellationErrorCount = 0;
                 }
                 this.remainingLabels = this.remainingLabels.filter(l => l !== this.enteredLabel);
@@ -201,12 +201,17 @@ export class ForcedSearchComponent implements OnChanges {
                 this.errorCount += 1;
                 this.appellationErrorCount += 1;
                 if(this.appellationErrorCount >= 3) {
-                    this.labelMap.get(this.searchLabel)?.forEach(path => {path.classList.remove('blinking');
+                    this.labelMap.get(this.searchLabel)?.forEach(path => {
+                        path.classList.remove('blinking');
                         path.setAttribute('fill', this.colorMap[3]);
-                        path.setAttribute('opacity', '0,2');
                         (path as HTMLElement).style.fill = this.colorMap[3];
+                        path.setAttribute('opacity', '0,2');
                     });
-                    this.remainingLabels = this.remainingLabels.filter(l => l !== this.enteredLabel);
+                    this.remainingLabels = this.remainingLabels.filter(l => l !== this.stringUtils.sanitize(this.searchLabel));
+                    if (this.remainingLabels.length === 0) {
+                        this.gameEnded = true;
+                        this.endGame();
+                    }
                     this.proposeNewZone();
                     this.appellationErrorCount = 0;
                     this.enteredLabel = '';

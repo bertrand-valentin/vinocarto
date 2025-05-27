@@ -22,9 +22,14 @@ export class CardComponent {
     @Input()
     set cardContent(value: Card) {
         this._cardContent = value;
+        this.cardContent.displayName = this.displayName(this.cardContent.type);
     }
 
     get cardContent(): Card {
         return this._cardContent;
+    }
+
+    private displayName(type: string): string {
+        return type === 'COUNTRY' ? 'PAYS' : type;
     }
 }
