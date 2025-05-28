@@ -38,6 +38,8 @@ export class ForcedSearchComponent implements OnChanges {
     gamePaused = false;
     gameEnded = false;
     gameWon = false;
+    displayAnswer= false;
+    displayedAnswer = '';
     elapsedTime: number = 0;
     showConfetti = false;
     confettiArray: { left: number, color: string, delay: number }[] = [];
@@ -207,6 +209,9 @@ export class ForcedSearchComponent implements OnChanges {
                         (path as HTMLElement).style.fill = this.colorMap[3];
                         path.setAttribute('opacity', '0,2');
                     });
+                    this.displayedAnswer = this.searchLabel;
+                    this.displayAnswer = true;
+                    this.waitTwoSeconds().then(r => this.displayAnswer = false);
                     this.remainingLabels = this.remainingLabels.filter(l => l !== this.stringUtils.sanitize(this.searchLabel));
                     if (this.remainingLabels.length === 0) {
                         this.gameEnded = true;
@@ -239,5 +244,9 @@ export class ForcedSearchComponent implements OnChanges {
         this.searchLabel = this.allLabels.filter(l => this.remainingLabels.includes(this.stringUtils.sanitize(l)))[Math.floor(Math.random() * this.remainingLabels.length)];
         this.labelMap.get(this.searchLabel)?.forEach(path =>  {path.classList.add('blinking');
                                                                         path.setAttribute('opacity', '1');});
+    }
+
+    private waitTwoSeconds(): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, 2000));
     }
 }
