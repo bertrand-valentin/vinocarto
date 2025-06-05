@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiBaseUrl: 'https://vinocarto-back.onrender.com'
+    apiBaseUrl: 'https://api.vinocarto.win',
 };
