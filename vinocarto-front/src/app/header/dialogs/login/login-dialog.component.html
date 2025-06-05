@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Connexion</h2>
+<mat-dialog-content>
+    <form (ngSubmit)="submitLogin()" #loginForm="ngForm">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Utilisateur</mat-label>
+            <input matInput
+                   [(ngModel)]="login"
+                   name="username"
+                   placeholder="Votre nom d'utilisateur"
+                   required
+                   #usernameInput>
+            <mat-error *ngIf="loginForm.submitted && !login">Le nom d'utilisateur est requis</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput
+                   [(ngModel)]="password"
+                   name="password"
+                   type="password"
+                   placeholder="Votre mot de passe"
+                   required>
+            <mat-error *ngIf="loginForm.submitted && !password">Le mot de passe est requis</mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="errorMessage" class="error-message">{{ errorMessage }}</mat-error>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="submitLogin()" [disabled]="!login || !password">Se connecter</button>
+</mat-dialog-actions>

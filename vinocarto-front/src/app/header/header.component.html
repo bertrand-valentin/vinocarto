@@ -26,4 +26,41 @@
             </g>
         </svg>
     </a>
+    <div class="user-icon" style="display: flex; align-items: center;">
+        <span *ngIf="isLoggedIn" style="margin-right: 8px;">{{ username }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menuLoggedIn" *ngIf="isLoggedIn">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+        <button mat-icon-button [matMenuTriggerFor]="menuInvite" *ngIf="!isLoggedIn">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #menuLoggedIn="matMenu">
+            <button mat-menu-item disabled>
+                <mat-icon>history</mat-icon>
+                <span>Historique</span>
+            </button>
+            <button mat-menu-item disabled>
+                <mat-icon>leaderboard</mat-icon>
+                <span>Scores</span>
+            </button>
+            <button mat-menu-item disabled>
+                <mat-icon>groups</mat-icon>
+                <span>Mes Ligues</span>
+            </button>
+            <button mat-menu-item (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>Logout</span>
+            </button>
+        </mat-menu>
+        <mat-menu #menuInvite="matMenu">
+            <button mat-menu-item (click)="openLoginDialog()">
+                <mat-icon>login</mat-icon>
+                <span>Connexion</span>
+            </button>
+            <button mat-menu-item (click)="openRegisterDialog()">
+                <mat-icon>person_add</mat-icon>
+                <span>Inscription</span>
+            </button>
+        </mat-menu>
+    </div>
 </div>

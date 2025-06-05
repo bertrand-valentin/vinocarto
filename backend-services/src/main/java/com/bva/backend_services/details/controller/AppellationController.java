@@ -1,6 +1,6 @@
-package com.bva.backend_services.controller;
+package com.bva.backend_services.details.controller;
 
-import com.bva.backend_services.service.AppellationService;
+import com.bva.backend_services.details.service.AppellationService;
 import com.bva.vinocarto_core.model.AppellationDto;
 import com.bva.vinocarto_core.model.Colour;
 import org.springframework.http.HttpStatus;

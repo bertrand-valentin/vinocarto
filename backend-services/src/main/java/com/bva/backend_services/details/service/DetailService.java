@@ -1,4 +1,4 @@
-package com.bva.backend_services.service;
+package com.bva.backend_services.details.service;
 
 import com.bva.persistence.entities.Detail;
 import com.bva.persistence.repository.DetailRepository;

@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Inscription</h2>
+<mat-dialog-content>
+    <form (ngSubmit)="submitRegister()" #registerForm="ngForm">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Utilisateur</mat-label>
+            <input matInput
+                   [(ngModel)]="login"
+                   name="login"
+                   placeholder="Choisissez un nom d'utilisateur"
+                   required
+                   #loginInput>
+            <mat-error *ngIf="registerForm.submitted && !login">Le nom d'utilisateur est requis</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput
+                   [(ngModel)]="password"
+                   name="password"
+                   type="password"
+                   placeholder="Choisissez un mot de passe"
+                   required>
+            <mat-error *ngIf="registerForm.submitted && !password">Le mot de passe est requis</mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="errorMessage" class="error-message">{{ errorMessage }}</mat-error>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="cancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="submitRegister()" [disabled]="!login || !password">S’inscrire</button>
+</mat-dialog-actions>

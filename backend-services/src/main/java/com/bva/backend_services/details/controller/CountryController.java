@@ -1,6 +1,6 @@
-package com.bva.backend_services.controller;
+package com.bva.backend_services.details.controller;
 
-import com.bva.backend_services.service.CountryService;
+import com.bva.backend_services.details.service.CountryService;
 import com.bva.vinocarto_core.model.CountryDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

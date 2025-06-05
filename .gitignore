@@ -22,3 +22,5 @@ target/
 .DS_Store
 /vinocarto-front/node_modules/
 /vinocarto-front/.angular/
+.env
+nginx/certs/

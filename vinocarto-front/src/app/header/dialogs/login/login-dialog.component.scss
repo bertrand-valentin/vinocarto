@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  background-color: rgba(250, 128, 114, 0.2); /* Teinte saumon */
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+  max-width: 24rem;
+  margin: 0 auto;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  color: #d32f2f; /* Rouge Material pour les erreurs */
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+@media (max-width: 32rem) {
+  :host {
+    padding: 0.5rem;
+    max-width: 90vw;
+  }
+}

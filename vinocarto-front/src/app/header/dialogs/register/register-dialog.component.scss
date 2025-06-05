@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  background-color: rgba(250, 128, 114, 0.2);
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  max-width: 24rem;
+  margin: 0 auto;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  color: red;
+}
+
+@media (max-width: 32rem) {
+  :host {
+    max-width: 90vw;
+  }
+}

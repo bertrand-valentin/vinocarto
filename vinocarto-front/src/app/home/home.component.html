@@ -1,23 +1,28 @@
 <section>
-    <form class="search">
-        <input
-                type="text"
-                placeholder="Rechercher une appellation"
-                [(ngModel)]="searchText"
-                name="filter"
-                (ngModelChange)="applyFilter()"
-        />
-
-        <select [(ngModel)]="sortField" name="sortField" (change)="applyFilter()">
-            <option value="name">Nom</option>
-            <option value="type">Type</option>
-            <option value="region">Région</option>
-        </select>
-
-        <button type="button" (click)="toggleSortDirection()">
-            {{ sortAsc ? '▲' : '▼' }}
-        </button>
-    </form>
+    <div class="search-container">
+        <div class="search">
+            <mat-form-field appearance="outline">
+                <mat-label>Rechercher</mat-label>
+                <input matInput
+                       placeholder="Nom, région, pays, appellation..."
+                       [(ngModel)]="searchText"
+                       (ngModelChange)="applyFilter()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="select">
+                <mat-label>Trier par</mat-label>
+                <mat-select [(ngModel)]="sortField" (selectionChange)="applyFilter()">
+                    <mat-option value="name">Nom</mat-option>
+                    <mat-option value="type">Type</mat-option>
+                    <mat-option value="region">Région</mat-option>
+                    <mat-option value="country">Pays</mat-option>
+                    <mat-option value="appellation">Appellation</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="toggleSortDirection()">
+                {{ sortAsc ? '▲ Trier' : '▼ Trier' }}
+            </button>
+        </div>
+    </div>
     <section class="results">
         <app-card
                 *ngFor="let card of filteredCardList"

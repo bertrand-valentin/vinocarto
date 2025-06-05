@@ -1,7 +1,7 @@
 .header-logo{
     max-width: 10vh;
     height: 80%;
-    margin-left: 2vh;
+    margin-left: 3vw;
     object-fit: contain;
 }
 
@@ -22,4 +22,11 @@
     display: inline-flex;
     align-items: center;
     height: 100%;
+}
+
+.user-icon {
+    display: inline-flex;
+    justify-content: flex-end;
+    margin-right: 3vw;
+    margin-left: auto;
 }

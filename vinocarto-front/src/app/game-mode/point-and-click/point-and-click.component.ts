@@ -5,7 +5,8 @@ import {
     OnChanges,
     Renderer2,
     SimpleChanges,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
@@ -24,7 +25,8 @@ import {MatListModule} from '@angular/material/list';
 })
 export class PointAndClickComponent implements OnChanges {
 
-    constructor(private http: HttpClient, private sanitizer: DomSanitizer, private el: ElementRef, private renderer: Renderer2) {
+    constructor(private http: HttpClient, private sanitizer: DomSanitizer,
+                private el: ElementRef, private renderer: Renderer2, private cdr: ChangeDetectorRef) {
     }
 
     @Input() svgPath!: string;
@@ -48,7 +50,6 @@ export class PointAndClickComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['svgPath'] && changes['svgPath'].currentValue) {
-            console.log(`Chargement du SVG: ${this.svgPath}`);
             this.loadSvg();
         }
     }
@@ -134,7 +135,6 @@ export class PointAndClickComponent implements OnChanges {
         const seconds = Math.floor((this.elapsedTime % 60000) / 1000);
         this.gameEnded = true;
         if(this.remainingLabels.length === 0) {
-            console.log('game won');
             this.gameWon = true;
             this.triggerConfetti();
         }
@@ -157,6 +157,7 @@ export class PointAndClickComponent implements OnChanges {
         this.timerInterval = setInterval(() => {
             const now = Date.now();
             this.elapsedTime = now - this.startTimestamp + this.pauseOffset;
+            this.cdr.detectChanges();
         }, 1000);
     }
 
