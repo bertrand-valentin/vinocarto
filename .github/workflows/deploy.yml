@@ -23,7 +23,7 @@ jobs:
       - name: Deploy via SSH
         run: |
           ssh ec2-user@15.236.112.83 << 'EOF'
-            cd /home/ec2-user/your-project-folder
+            cd /home/ec2-user/vinocarto
             git pull origin main
             docker-compose down
             docker-compose up -d --build
