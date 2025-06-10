@@ -1,0 +1,3 @@
+INSERT INTO region (ID, NAME, COUNTRY_ID_FK) VALUES (5,'PROVENCE', 1);
+INSERT INTO detail(ID, COUNTRY_ID_FK, REGION_ID_FK, APPELLATION_ID_FK, TYPE, MAP_READY, DESCRIPTION) VALUES (8, 1, 5, NULL, 1, true, 'Berceau ensoleillé des vins rosés, la Provence s’étend entre mer et montagne, caressée par le mistral. Ici, les vignes baignées de lumière donnent naissance à des vins frais, délicats, empreints de garrigue et de fruits rouges.
+Un terroir de caractère, où chaque gorgée évoque les parfums du Sud et les couchers de soleil sur les oliviers.');
