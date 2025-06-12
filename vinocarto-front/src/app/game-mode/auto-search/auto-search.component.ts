@@ -19,6 +19,7 @@ import {MatInput, MatSuffix} from "@angular/material/input";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {StringUtilsService} from "../../utils/string-utils.service";
+import { GAME_CONFIG } from '../../utils/game-config';
 
 @Component({
     selector: 'auto-search',
@@ -29,9 +30,9 @@ import {StringUtilsService} from "../../utils/string-utils.service";
 })
 export class AutoSearchComponent implements OnChanges, OnDestroy {
     @Input() svgPath!: string;
-    @Input() pointsPerZone: number = 100;
-    @Input() errorPenalty: number = 20;
-    @Input() timePenalty: number = 2;
+    pointsPerZone: number = GAME_CONFIG.POINTS_PER_ZONE;
+    errorPenalty: number = GAME_CONFIG.ERROR_PENALTY;
+    timePenalty: number = GAME_CONFIG.TIME_PENALTY;
 
     svgContent: SafeHtml = '';
     hoveredLabel: string | null = null;

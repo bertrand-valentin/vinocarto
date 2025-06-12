@@ -11,6 +11,10 @@
     object-fit: contain;
 }
 
+.svg-wrapper path.clickable-region {
+    fill: #9E9E9E !important;
+}
+
 .svg-wrapper path.clickable-region:hover {
     cursor: pointer;
 }
@@ -81,20 +85,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 3.5vh;
     font-size: 3vh;
     color: var(--primary-color);
     font-weight: 600;
     text-align: center;
+    height: auto; /* Supprimé height fixe pour éviter décalages */
 }
 
-.card-title .mat-mdc-card-header {
+.score-card .mat-mdc-card-header,
+.label-card .mat-mdc-card-header {
     width: 100%;
-    text-align: center;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
+}
+
+.label-card .mat-mdc-card-header {
+    min-height: 5vh; /* Hauteur minimale pour centrage vertical */
 }
 
 .error-row {
@@ -108,8 +117,7 @@
 .error-icon {
     font-size: 1.8vh;
     color: var(--primary-color);
-    position: relative;
-    top: 1px;
+    /* Supprimé position: relative; top: 1px */
 }
 
 .confetti-container {
@@ -142,4 +150,53 @@
         transform: translateY(100vh) rotate(720deg);
         opacity: 0;
     }
+}
+
+.score-card, .label-card {
+    background-color: var(--accent-color);
+    border-radius: 1vh;
+    padding: 2vh;
+    margin-top: 2vh;
+    box-shadow: 0 0.2vh 0.5vh rgba(0, 0, 0, 0.2);
+}
+
+.score-card {
+    min-width: 20vw; /* Empêche le rétrécissement excessif */
+}
+
+.score-card .mat-mdc-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.score-row, .error-row, .remaining-row, .time-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vh;
+    color: var(--primary-color);
+    font-size: 1.8vh;
+    padding: 0.5vh 1vh;
+    border-radius: 0.5vh;
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 100%; /* Uniformise la largeur */
+    text-align: center;
+}
+
+.score-row mat-icon, .error-row mat-icon, .remaining-row mat-icon, .time-row mat-icon {
+    font-size: 1.8vh;
+    height: 1.8vh;
+    width: 1.8vh;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+}
+
+.score-card button {
+    margin-top: 1vh;
+    align-self: center;
 }

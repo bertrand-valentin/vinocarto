@@ -8,7 +8,9 @@
         <div class="side-text">
             En mode recherche libre, vous devez sélectionner une appellation sur la carte et retrouver son nom.
             <br/> Trouvez toutes les appellations le plus rapidement possible.
-            <br/> <strong>Comment est calculé le score :</strong> Chaque appellation trouvée rapporte 100 points. Chaque erreur vous coûte 20 points. Chaque seconde écoulée réduit votre score de 2 points.
+            <br/><strong>Comment est calculé le score :</strong> Chaque appellation trouvée rapporte {{ pointsPerZone }} points.
+            Chaque erreur vous coûte {{ errorPenalty }} points.
+            Chaque seconde écoulée réduit votre score de {{ timePenalty }} points.
             <div class="timer-display">{{ elapsedTime | date:'mm:ss' }}</div>
             <div class="start-button">
                 <button *ngIf="!gameStarted" mat-fab extended (click)="startGame()">

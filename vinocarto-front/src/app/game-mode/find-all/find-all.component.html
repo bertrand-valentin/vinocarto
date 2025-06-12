@@ -1,79 +1,115 @@
 <div class="find-all">
     <div class="svg">
         <div class="svg-wrapper" [innerHTML]="svgContent"></div>
-        <div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
+        <div *ngIf="!svgContent" class="error-hidden">Icône introuvable ou chargement échoué</div>
     </div>
+
     <div class="side">
         <div class="side-title">Find All</div>
-        <div class="side-text">En mode find all, vous devez retrouver tous les noms des appellations affichées sur la
-            carte.
-            Cliquez sur le bouton suivant pour démarrer le jeu.
-            <div class="timer-display">{{ elapsedTime | date:'mm:ss' }}</div>
+
+        <div class="side-text">
+            En mode Find All, saisissez les noms des appellations affichées sur la carte.
+            <br/><strong>Comment est calculé le score :</strong> Chaque appellation trouvée rapporte {{ pointsPerZone }} points.
+            Chaque erreur vous coûte {{ errorPenalty }} points.
+            Chaque seconde écoulée réduit votre score de {{ timePenalty }} points.
+
+            <div class="timer-display" [ngClass]="{'warning': elapsedTime > 120000}">{{ elapsedTime | date:'mm:ss' }}
+            </div>
             <div class="start-button">
-                <button *ngIf="!this.gameStarted" mat-fab extended (click)="startGame()">
+                <button *ngIf="!gameStarted" mat-fab extended (click)="startGame()" matTooltip="Démarrer le jeu">
                     <mat-icon>play_circle</mat-icon>
                     Start
                 </button>
-                <button *ngIf="this.gameStarted && !this.gamePaused &&!this.gameEnded" mat-fab extended
-                        (click)="pauseGame()">
+                <button *ngIf="gameStarted && !gamePaused && !gameEnded" mat-fab extended (click)="pauseGame()"
+                        matTooltip="Mettre en pause">
                     <mat-icon>pause_circle</mat-icon>
                     Pause
                 </button>
-                <button *ngIf="this.gameStarted && this.gamePaused && !this.gameEnded" mat-fab extended
-                        (click)="resumeGame()">
+                <button *ngIf="gameStarted && gamePaused && !gameEnded" mat-fab extended (click)="resumeGame()"
+                        matTooltip="Reprendre le jeu">
                     <mat-icon>replay</mat-icon>
                     Reprendre
                 </button>
-                <button *ngIf="this.gameStarted &&!this.gameEnded" mat-fab extended (click)="endGame()">
+                <button *ngIf="gameStarted && !gameEnded" mat-fab extended (click)="endGame()"
+                        matTooltip="Terminer le jeu">
                     <mat-icon>stop</mat-icon>
                     Terminer
                 </button>
-                <button *ngIf="this.gameEnded" mat-fab extended (click)="clearGame()">
+                <button *ngIf="gameEnded" mat-fab extended (click)="clearGame()" matTooltip="Quitter le jeu">
                     <mat-icon>close</mat-icon>
-                    Quitter le jeu
+                    Quitter
                 </button>
             </div>
         </div>
-        <div class="side-text" *ngIf="this.gameStarted && !this.gamePaused">
-            <mat-form-field class="example-form-field" *ngIf="!this.gameEnded" appearance="outline">
-                <input matInput type="text" [(ngModel)]="enteredLabel" (keydown.enter)="submitValue(enteredLabel)"
-                       placeholder="Appellation">
-                @if (enteredLabel) {
-                    <button matSuffix mat-icon-button aria-label="Clear" (click)="enteredLabel=''">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                }
-            </mat-form-field>
-            <div class="score-display">
-                <div class="error-row" *ngIf="this.gameStarted">
-                    <span class="score-display">Reste : {{ this.remainingLabels.length }}
-                        / {{ this.results.data.length }}</span>
-                </div>
-                <div class="error-row" *ngIf="this.errorCount > 0 && !this.gameEnded">
-                    <span class="score-display">Erreurs : {{ this.errorCount }}</span>
+
+        <div class="side-text" *ngIf="gameStarted && !gamePaused">
+            <div class="input-container">
+                <mat-form-field class="example-form-field" *ngIf="!gameEnded" appearance="outline">
+                    <input matInput type="text" [(ngModel)]="enteredLabel" (keydown.enter)="submitValue(enteredLabel)"
+                           placeholder="Appellation"
+                           [ngClass]="{'error-input': feedbackMessage && feedbackMessage.includes('inconnue')}">
+                    @if (enteredLabel) {
+                        <button matSuffix mat-icon-button aria-label="Clear" (click)="enteredLabel=''">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    }
+                </mat-form-field>
+                <div class="feedback-message"
+                     [ngClass]="{'success': feedbackMessage.includes('Correct'), 'error': feedbackMessage.includes('inconnue')}">
+                    {{ feedbackMessage }}
                 </div>
             </div>
-            <div class="score-display" *ngIf="this.gameStarted && !this.gamePaused">
-                <section class="example-container mat-elevation-z8" tabindex="0">
-                    <table mat-table [dataSource]="this.results" matSort>
-                        <ng-container matColumnDef="appellation">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Appellation</th>
-                            <td mat-cell *matCellDef="let result"><span
-                                    [ngClass]="{'text-hidden': result.isHidden && !gameEnded,
-                                                'text-red': !result.isCorrect && gameEnded}">
-                                {{ result.appellation }}</span>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="timestamp">
-                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Timing</th>
-                            <td mat-cell *matCellDef="let result"><span
-                                    [ngClass]="{ 'text-hidden': result.isHidden }"> {{ result.timestamp | date:'mm:ss' }}</span>
-                            </td>
-                        </ng-container>
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                    </table>
-                </section>
+            <div class="score-display" *ngIf="gameStarted">
+                <div class="score-container">
+                    <section class="example-container mat-elevation-z8" tabindex="0">
+                        <table mat-table [dataSource]="results" matSort>
+                            <ng-container matColumnDef="appellation">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header>Appellation</th>
+                                <td mat-cell *matCellDef="let result">
+                                    <span *ngIf="result.isCorrect" class="success-text">{{ result.appellation }}</span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="timestamp">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header>Timing</th>
+                                <td mat-cell *matCellDef="let result">
+                                    <span *ngIf="result.isCorrect">{{ result.timestamp | date:'mm:ss' }}</span>
+                                </td>
+                            </ng-container>
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        </table>
+                    </section>
+                    <mat-card class="score-card">
+                        <mat-card-header>
+                            <mat-card-title class="card-title">Résultats</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <div class="score-row">
+                                <mat-icon>star</mat-icon>
+                                Score : {{ score }}
+                            </div>
+                            <div class="error-row" *ngIf="errorCount > 0">
+                                <mat-icon>error</mat-icon>
+                                Erreurs : {{ errorCount }}
+                            </div>
+                            <div class="remaining-row">
+                                <mat-icon>map</mat-icon>
+                                Restant : {{ remainingLabels.length }} / {{ results.data.length }}
+                            </div>
+                            <div class="time-row">
+                                <mat-icon>timer</mat-icon>
+                                Temps : {{ elapsedTime | date:'mm:ss' }}
+                            </div>
+                            <div class="hint-button">
+                                <button mat-fab extended (click)="showHint()" *ngIf="!gameEnded"
+                                        matTooltip="Obtenir un indice">
+                                    <mat-icon>help</mat-icon>
+                                    Indice
+                                </button>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
             </div>
         </div>
         <div class="confetti-container" *ngIf="showConfetti">
