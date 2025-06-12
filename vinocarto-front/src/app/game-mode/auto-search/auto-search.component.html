@@ -1,0 +1,104 @@
+<div class="point-and-click">
+    <div class="svg">
+        <div class="svg-wrapper" [innerHTML]="svgContent"></div>
+        <div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
+    </div>
+    <div class="side">
+        <div class="side-title">Recherche Libre</div>
+        <div class="side-text">
+            En mode recherche libre, vous devez sélectionner une appellation sur la carte et retrouver son nom.
+            <br/> Trouvez toutes les appellations le plus rapidement possible.
+            <br/> <strong>Comment est calculé le score :</strong> Chaque appellation trouvée rapporte 100 points. Chaque erreur vous coûte 20 points. Chaque seconde écoulée réduit votre score de 2 points.
+            <div class="timer-display">{{ elapsedTime | date:'mm:ss' }}</div>
+            <div class="start-button">
+                <button *ngIf="!gameStarted" mat-fab extended (click)="startGame()">
+                    <mat-icon>play_circle</mat-icon>
+                    Start
+                </button>
+                <button *ngIf="gameStarted && !gamePaused && !gameEnded" mat-fab extended (click)="pauseGame()">
+                    <mat-icon>pause_circle</mat-icon>
+                    Pause
+                </button>
+                <button *ngIf="gameStarted && gamePaused && !gameEnded" mat-fab extended (click)="resumeGame()">
+                    <mat-icon>replay</mat-icon>
+                    Reprendre
+                </button>
+                <button *ngIf="gameStarted && !gameEnded" mat-fab extended (click)="endGame()">
+                    <mat-icon>stop</mat-icon>
+                    Terminer
+                </button>
+                <button *ngIf="gameEnded" mat-fab extended (click)="clearGame()">
+                    <mat-icon>close</mat-icon>
+                    Quitter le jeu
+                </button>
+            </div>
+        </div>
+        <div class="side-text" *ngIf="gameStarted && !gameEnded">
+            <mat-form-field class="example-form-field" appearance="outline">
+                <mat-label>Entrez le label</mat-label>
+                <input matInput type="text" [(ngModel)]="enteredLabel" [disabled]="isInputDisabled" (keydown.enter)="submitValue(enteredLabel)" placeholder="Appellation">
+                <button *ngIf="enteredLabel" matSuffix mat-icon-button aria-label="Clear" (click)="enteredLabel=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-card class="score-card">
+                <mat-card-header>
+                    <mat-card-title class="card-title">Statistiques</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="score-row">
+                        <mat-icon>star</mat-icon>
+                        <span>Score : {{ score }}</span>
+                    </div>
+                    <div class="error-row" *ngIf="errorCount > 0">
+                        <mat-icon class="error-icon">warning</mat-icon>
+                        <span>Erreurs : {{ errorCount }}</span>
+                    </div>
+                    <div class="remaining-row">
+                        <mat-icon>map</mat-icon>
+                        <span>Zones restantes : {{ remainingLabels.length }}</span>
+                    </div>
+                    <button mat-fab extended color="accent" (click)="showHint()" [disabled]="isHintActive || remainingLabels.length === 0">
+                        <mat-icon>lightbulb</mat-icon>
+                        Indice
+                    </button>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <div class="side-text" *ngIf="gameEnded && gameWon">
+            <mat-card class="score-card">
+                <mat-card-header>
+                    <mat-card-title class="card-title">Victoire !</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="score-row">
+                        <mat-icon>star</mat-icon>
+                        <span>Score final : {{ score }}</span>
+                    </div>
+                    <div class="time-row">
+                        <mat-icon>timer</mat-icon>
+                        <span>Temps : {{ elapsedTime | date:'mm:ss' }}</span>
+                    </div>
+                    <div class="error-row">
+                        <mat-icon class="error-icon">warning</mat-icon>
+                        <span>Erreurs : {{ errorCount }}</span>
+                    </div>
+                    <button mat-fab extended color="primary" (click)="replayGame()">
+                        <mat-icon>refresh</mat-icon>
+                        Rejouer
+                    </button>
+                    <button mat-fab extended color="accent" (click)="clearGame()">
+                        <mat-icon>close</mat-icon>
+                        Quitter
+                    </button>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+    <div class="confetti-container" *ngIf="showConfetti">
+        <div class="confetti" *ngFor="let c of confettiArray" [ngStyle]="{
+            left: c.left + '%',
+            backgroundColor: c.color,
+            animationDelay: c.delay + 's'}"></div>
+    </div>
+</div>

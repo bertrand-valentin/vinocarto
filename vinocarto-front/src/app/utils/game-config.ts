@@ -1,0 +1,5 @@
+export const GAME_CONFIG = {
+    POINTS_PER_ZONE: 100,
+    ERROR_PENALTY: 20,
+    TIME_PENALTY: 2
+};

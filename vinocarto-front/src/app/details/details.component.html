@@ -5,7 +5,7 @@
             <div class="game-name">Mode de jeu  <mat-icon class="menu-icon">sports_esports</mat-icon></div>
             <mat-form-field class="game-mode-panel">
                 <mat-select disableRipple [(ngModel)]="selectedValue" (selectionChange)="onGameModeChange($event.value)">
-                    <mat-option *ngFor="let option of options" [value]="option.value">
+                    <mat-option *ngFor="let option of options" [value]="option.value" [disabled]="option.disabled">
                         {{ option.label }}
                     </mat-option>
                 </mat-select>
@@ -16,5 +16,6 @@
         <point-and-click *ngIf="selectedValue === 'pointAndClick'" [svgPath]="card.photo"></point-and-click>
         <forced-search *ngIf="selectedValue === 'forcedSearch'" [svgPath]="card.photo"></forced-search>
         <find-all *ngIf="selectedValue === 'findAll'" [svgPath]="card.photo"></find-all>
+        <auto-search *ngIf="selectedValue === 'autoSearch'" [svgPath]="card.photo"></auto-search>
     </div>
 </div>

@@ -11,6 +11,7 @@ import {FindAllComponent} from "../game-mode/find-all/find-all.component";
 import {PreferencesService} from "../utils/preferences.service";
 import {StringUtilsService} from "../utils/string-utils.service";
 import {ForcedSearchComponent} from "../game-mode/forced-search/forced-search.component";
+import {AutoSearchComponent} from "../game-mode/auto-search/auto-search.component";
 
 @Component({
     selector: 'app-details',
@@ -21,7 +22,8 @@ import {ForcedSearchComponent} from "../game-mode/forced-search/forced-search.co
         FormsModule,
         CommonModule,
         FindAllComponent,
-        ForcedSearchComponent
+        ForcedSearchComponent,
+        AutoSearchComponent
     ],
     templateUrl: './details.component.html',
     styleUrls: ['./details.component.scss'],
@@ -34,11 +36,12 @@ export class DetailsComponent implements OnInit {
     cardId: number;
     selectedValue: string = '';
     options = [
-        {label: 'point and click', value: 'pointAndClick'},
-        {label: 'find all', value: 'findAll'},
-        {label: 'recherche forcée', value: 'forcedSearch'},
-        {label: 'leçon', value: 'lesson'},
-        {label: 'recherche par type', value: 'typeSearch'}
+        {label: 'point and click', value: 'pointAndClick', disabled: false},
+        {label: 'find all', value: 'findAll', disabled: false},
+        {label: 'recherche forcée', value: 'forcedSearch', disabled: false},
+        {label: 'leçon', value: 'lesson', disabled: true},
+        {label: 'recherche par type', value: 'typeSearch', disabled: true},
+        {label: 'recherche libre', value: 'autoSearch', disabled: false}
     ];
 
     constructor(private preferenceService: PreferencesService) {
