@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "region": "",
+    "country": "FRANCE",
+    "type": "COUNTRY",
+    "appellation": "",
+    "mapReady": true,
+    "description": "La France est l’un des berceaux historiques de la viticulture mondiale. Avec une diversité de terroirs unique, elle produit des vins de renommée internationale, allant des grands crus prestigieux aux appellations locales pleines de caractère.\n"
+  },
+  {
+    "id": 3,
+    "region": "BORDELAIS",
+    "country": "FRANCE",
+    "type": "APPELLATION",
+    "appellation": "MEDOC",
+    "mapReady": true,
+    "description": "Situé dans le Bordelais, le Médoc est réputé pour ses vins rouges puissants et élégants, majoritairement issus du cépage Cabernet Sauvignon. Il abrite plusieurs prestigieux châteaux classés, dont certains Grands Crus, qui font la fierté de la viticulture bordelaise.\n"
+  },
+  {
+    "id": 4,
+    "region": "CHAMPAGNE",
+    "country": "FRANCE",
+    "type": "REGION",
+    "appellation": "",
+    "mapReady": true,
+    "description": "Située au nord-est de la France, la Champagne est célèbre pour son vin effervescent élaboré selon une méthode traditionnelle. C’est la seule région autorisée à produire le champagne, symbole de fête et de raffinement dans le monde entier.\n"
+  },
+  {
+    "id": 5,
+    "region": "VALLEE DU RHONE",
+    "country": "FRANCE",
+    "type": "REGION",
+    "appellation": "",
+    "mapReady": true,
+    "description": "La Vallée du Rhône est l’une des plus anciennes régions viticoles de France, s’étendant du sud de Lyon jusqu’à Avignon. Elle est réputée pour ses vins rouges charpentés comme les Côtes-du-Rhône, mais aussi pour ses blancs aromatiques. Sa diversité de terroirs en fait une région riche et contrastée, entre influences septentrionales et méridionales."
+  },
+  {
+    "id": 6,
+    "region": "LANGUEDOC ROUSSILLON",
+    "country": "FRANCE",
+    "type": "REGION",
+    "appellation": "",
+    "mapReady": true,
+    "description": "Ancrés entre mer Méditerranée et contreforts des Cévennes, les vins du Languedoc-Roussillon expriment une diversité remarquable : rouges puissants aux notes de fruits noirs et de garrigue, blancs frais et floraux, rosés gourmands, et cuvées qui révèlent toute la richesse d’un terroir solaire, façonné par le vent, la pierre et la passion des vignerons."
+  },
+  {
+    "id": 7,
+    "region": "LANGUEDOC ROUSSILLON",
+    "country": "FRANCE",
+    "type": "APPELLATION",
+    "appellation": "COTEAUX DU LANGUEDOC",
+    "mapReady": true,
+    "description": "Née sur des sols variés entre mer et garrigue, l’appellation Coteaux du Languedoc offre des vins de caractère, alliant la générosité du climat méditerranéen à la complexité de cépages nobles : rouges structurés aux arômes de fruits mûrs et d’épices, blancs élégants et expressifs, pour des cuvées à la fois authentiques et pleines de relief."
+  },
+  {
+    "id": 8,
+    "region": "PROVENCE",
+    "country": "FRANCE",
+    "type": "REGION",
+    "appellation": "",
+    "mapReady": true,
+    "description": "Berceau ensoleillé des vins rosés, la Provence s’étend entre mer et montagne, caressée par le mistral. Ici, les vignes baignées de lumière donnent naissance à des vins frais, délicats, empreints de garrigue et de fruits rouges. Un terroir de caractère, où chaque gorgée évoque les parfums du Sud et les couchers de soleil sur les oliviers."
+  }
+]
