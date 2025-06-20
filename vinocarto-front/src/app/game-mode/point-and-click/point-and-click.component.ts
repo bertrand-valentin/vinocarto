@@ -7,6 +7,7 @@ import {
     SimpleChanges,
     ViewEncapsulation,
     ChangeDetectorRef,
+    OnInit,
     OnDestroy
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -25,7 +26,7 @@ import {GAME_CONFIG} from '../../utils/game-config';
     styleUrls: ['./point-and-click.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class PointAndClickComponent implements OnChanges, OnDestroy {
+export class PointAndClickComponent implements OnInit, OnChanges, OnDestroy {
     @Input() svgPath!: string;
 
     pointsPerZone: number = GAME_CONFIG.POINTS_PER_ZONE;
@@ -45,8 +46,8 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
     private startTimestamp = 0;
     private pauseOffset = 0;
     score = 0;
-    private labelMap = new Map<string, SVGPathElement[]>();
-    remainingLabels: string[] = []; // Public, comme demandé
+    private labelMap = new Map<string, { labels: string[], paths: SVGPathElement[] }>();
+    remainingLabels: string[] = [];
     searchLabel: string = '';
     errorCount = 0;
     allLabels: string[] = [];
@@ -61,6 +62,10 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
         private renderer: Renderer2,
         private cdr: ChangeDetectorRef
     ) {}
+
+    ngOnInit() {
+        this.initializeAudio();
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['svgPath'] && changes['svgPath'].currentValue) {
@@ -102,8 +107,18 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
     private loadSvg() {
         this.http.get(this.svgPath, { responseType: 'text' }).subscribe({
             next: (svg) => {
+                console.log('SVG chargé:', svg.substring(0, 100));
                 this.svgContent = this.sanitizer.bypassSecurityTrustHtml(svg);
-                setTimeout(() => this.setupListeners(), 0);
+                console.log('SVG appliqué au DOM');
+                setTimeout(() => {
+                    this.setupListeners();
+                    const svgWrapper = this.el.nativeElement.querySelector('.svg-wrapper svg');
+                    if (!svgWrapper) {
+                        console.error('SVG non rendu dans le DOM');
+                    } else {
+                        console.log('SVG rendu avec succès');
+                    }
+                }, 0);
             },
             error: (err) => {
                 console.error(`Erreur lors du chargement du SVG: ${this.svgPath}`, err);
@@ -119,31 +134,40 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        const allPaths = svgWrapper.querySelectorAll('path.clickable-region');
+        const allPaths = svgWrapper.querySelectorAll('path.clickable-region') as NodeListOf<SVGPathElement>;
         if (!allPaths.length) {
             console.error('No clickable regions found in SVG');
             return;
         }
 
         allPaths.forEach((path) => {
-            const label = path.getAttribute('data-label');
-            if (!label) return;
-
-            if (!this.labelMap.has(label)) {
-                this.labelMap.set(label, []);
+            const labelAttr = path.getAttribute('data-label');
+            if (!labelAttr) {
+                console.warn('Path sans data-label détecté', path);
+                return;
             }
-            this.labelMap.get(label)?.push(<SVGPathElement>path); // Cast comme demandé
+            const labels = labelAttr.split(',').map(l => l.trim());
+
+            labels.forEach(label => {
+                if (!this.labelMap.has(label)) {
+                    this.labelMap.set(label, { labels, paths: [] });
+                }
+                const entry = this.labelMap.get(label)!;
+                if (!entry.paths.includes(path)) {
+                    entry.paths.push(path);
+                }
+            });
         });
 
-        this.labelMap.forEach((paths, label) => {
-            paths.forEach(path => {
+        this.labelMap.forEach((entry, label) => {
+            entry.paths.forEach(path => {
                 this.renderer.listen(path, 'mouseenter', () => {
-                    paths.forEach(p => this.renderer.setStyle(p, 'opacity', '0.5'));
+                    entry.paths.forEach(p => this.renderer.addClass(p, 'hovered'));
                     this.hoveredLabel = label;
                 });
 
                 this.renderer.listen(path, 'mouseleave', () => {
-                    paths.forEach(p => this.renderer.removeStyle(p, 'opacity'));
+                    entry.paths.forEach(p => this.renderer.removeClass(p, 'hovered'));
                     this.hoveredLabel = null;
                 });
 
@@ -167,15 +191,18 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
         this.errorCount = 0;
         this.score = 0;
         this.searchLabel = '';
-        this.initializeAudio();
         this.startTimerLoop();
         this.remainingLabels = Array.from(this.labelMap.keys());
         this.allLabels = Array.from(this.labelMap.keys());
         this.searchLabel = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
-        this.labelMap.forEach((paths) => {
-            paths.forEach(path => {
-                this.renderer.setStyle(path, 'fill', '#9E9E9E');
-                path.setAttribute('opacity', '0.2');
+        this.labelMap.forEach((entry) => {
+            entry.paths.forEach(path => {
+                this.renderer.addClass(path, 'clickable-region');
+                this.renderer.removeClass(path, 'found');
+                this.renderer.removeClass(path, 'partial');
+                this.renderer.removeClass(path, 'error');
+                this.renderer.setAttribute(path, 'fill', path.getAttribute('fill') || '#9E9E9E');
+                this.renderer.setAttribute(path, 'opacity', '0.2');
             });
         });
     }
@@ -217,11 +244,14 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
         this.searchLabel = '';
         this.remainingLabels = [];
         this.stopTimer();
-        this.labelMap.forEach((paths) => {
-            paths.forEach(path => {
-                this.renderer.setStyle(path, 'fill', '#9E9E9E');
-                path.setAttribute('opacity', '1');
-                path.classList.add('clickable-region');
+        this.labelMap.forEach((entry) => {
+            entry.paths.forEach(path => {
+                this.renderer.addClass(path, 'clickable-region');
+                this.renderer.removeClass(path, 'found');
+                this.renderer.removeClass(path, 'partial');
+                this.renderer.removeClass(path, 'error');
+                this.renderer.setAttribute(path, 'fill', path.getAttribute('fill') || '#9E9E9E');
+                this.renderer.setAttribute(path, 'opacity', '1');
             });
         });
     }
@@ -235,10 +265,22 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
         if (this.gameStarted && !this.gamePaused) {
             if (label === this.searchLabel) {
                 this.remainingLabels = this.remainingLabels.filter(l => l !== label);
-                this.labelMap.get(label)?.forEach(path => {
-                    this.renderer.setStyle(path, 'fill', '#4CAF50');
-                    path.setAttribute('opacity', '1');
-                    path.classList.remove('clickable-region');
+                const entry = this.labelMap.get(label)!;
+                const allLabelsFound = entry.labels.every(l => !this.remainingLabels.includes(l));
+                entry.paths.forEach(path => {
+                    if (allLabelsFound) {
+                        this.renderer.addClass(path, 'found');
+                        this.renderer.removeClass(path, 'partial');
+                        this.renderer.removeClass(path, 'clickable-region');
+                        this.renderer.setAttribute(path, 'fill', '#4CAF50');
+                        this.renderer.setAttribute(path, 'opacity', '1');
+                    } else {
+                        this.renderer.addClass(path, 'partial');
+                        this.renderer.removeClass(path, 'found');
+                        this.renderer.setAttribute(path, 'fill', '#FF4500');
+                        this.renderer.setAttribute(path, 'opacity', '0.6');
+                    }
+                    console.log('Classe appliquée au path:', path, 'Classe:', allLabelsFound ? 'found' : 'partial', 'Styles actuels:', path.getAttribute('style'));
                 });
                 this.calculateScore();
                 if (this.remainingLabels.length === 0) {
@@ -248,6 +290,16 @@ export class PointAndClickComponent implements OnChanges, OnDestroy {
                 }
             } else {
                 this.errorCount++;
+                this.labelMap.get(label)?.paths.forEach(path => {
+                    this.renderer.addClass(path, 'error');
+                    this.renderer.setAttribute(path, 'fill', '#F44336');
+                    this.renderer.setAttribute(path, 'opacity', '0.7');
+                    setTimeout(() => {
+                        this.renderer.removeClass(path, 'error');
+                        this.renderer.setAttribute(path, 'fill', path.getAttribute('fill') || '#9E9E9E');
+                        this.renderer.setAttribute(path, 'opacity', '0.2');
+                    }, 500);
+                });
                 this.calculateScore();
             }
         }

@@ -12,11 +12,30 @@
 }
 
 .svg-wrapper path.clickable-region {
-    fill: #9E9E9E !important;
+    opacity: 0.2;
 }
 
 .svg-wrapper path.clickable-region:hover {
     cursor: pointer;
+}
+
+.svg-wrapper path.hovered {
+    opacity: 0.5 !important;
+}
+
+.svg-wrapper path.found {
+    fill: #4CAF50 !important;
+    opacity: 1 !important;
+}
+
+.svg-wrapper path.partial {
+    fill: #FF4500 !important;
+    opacity: 0.6 !important;
+}
+
+.svg-wrapper path.error {
+    fill: #F44336 !important;
+    opacity: 0.7 !important;
 }
 
 .point-and-click {
@@ -89,7 +108,7 @@
     color: var(--primary-color);
     font-weight: 600;
     text-align: center;
-    height: auto; /* Supprimé height fixe pour éviter décalages */
+    height: auto;
 }
 
 .score-card .mat-mdc-card-header,
@@ -103,7 +122,7 @@
 }
 
 .label-card .mat-mdc-card-header {
-    min-height: 5vh; /* Hauteur minimale pour centrage vertical */
+    min-height: 5vh;
 }
 
 .error-row {
@@ -117,7 +136,6 @@
 .error-icon {
     font-size: 1.8vh;
     color: var(--primary-color);
-    /* Supprimé position: relative; top: 1px */
 }
 
 .confetti-container {
@@ -161,7 +179,7 @@
 }
 
 .score-card {
-    min-width: 20vw; /* Empêche le rétrécissement excessif */
+    min-width: 20vw;
 }
 
 .score-card .mat-mdc-card-content {
@@ -183,7 +201,7 @@
     padding: 0.5vh 1vh;
     border-radius: 0.5vh;
     background-color: rgba(255, 255, 255, 0.1);
-    width: 100%; /* Uniformise la largeur */
+    width: 100%;
     text-align: center;
 }
 

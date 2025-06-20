@@ -62,8 +62,9 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
     private startTimestamp = 0;
     private pauseOffset = 0;
     score = 0;
-    private labelMap = new Map<string, SVGPathElement[]>();
+    private labelMap = new Map<string, { labels: string[]; paths: SVGPathElement[] }>();
     private rawToSanitizedLabelMap = new Map<string, string>();
+    private rawLabelMap = new Map<string, string[]>();
     remainingLabels: string[] = [];
     searchLabel: string = '';
     errorCount = 0;
@@ -71,10 +72,10 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
     enteredLabel: string = '';
     allLabels: string[] = [];
     private colorMap: { [key: number]: string } = {
-        0: '#00C853', // Verde (0 erreur)
-        1: '#FFB300', // Jaune (1 erreur)
-        2: '#EF6C00', // Orange (2 erreurs)
-        3: '#D50000', // Rouge (3 erreurs)
+        0: '#00C853',
+        1: '#FFB300',
+        2: '#EF6C00',
+        3: '#D50000'
     };
 
     private audioContext: AudioContext | null = null;
@@ -152,28 +153,29 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        allPaths.forEach((path) => {
+        allPaths.forEach((path, index) => {
             const rawLabel = path.getAttribute('data-label');
             if (!rawLabel) return;
 
-            const sanitizedLabel = this.stringUtils.sanitize(rawLabel);
-
-            if (!this.labelMap.has(sanitizedLabel)) {
-                this.labelMap.set(sanitizedLabel, []);
-            }
-            this.labelMap.get(sanitizedLabel)!.push(path as SVGPathElement);
-            this.rawToSanitizedLabelMap.set(rawLabel, sanitizedLabel);
+            const labels = rawLabel.split(',').map(l => this.stringUtils.sanitize(l.trim()));
+            const rawLabels = rawLabel.split(',').map(l => l.trim());
+            const pathKey = `path_${index}`;
+            this.labelMap.set(pathKey, { labels, paths: [path as SVGPathElement] });
+            this.rawLabelMap.set(pathKey, rawLabels);
+            labels.forEach(sanitizedLabel => {
+                this.rawToSanitizedLabelMap.set(sanitizedLabel, pathKey);
+            });
         });
 
-        this.labelMap.forEach((paths, label) => {
-            paths.forEach((path) => {
+        this.labelMap.forEach((entry, pathKey) => {
+            entry.paths.forEach((path) => {
                 this.renderer.listen(path, 'mouseenter', () => {
-                    paths.forEach((p) => this.renderer.setStyle(p, 'opacity', '0.5'));
-                    this.hoveredLabel = label;
+                    entry.paths.forEach((p) => this.renderer.setStyle(p, 'opacity', '0.5'));
+                    this.hoveredLabel = this.rawLabelMap.get(pathKey)?.[0] || entry.labels[0];
                 });
 
                 this.renderer.listen(path, 'mouseleave', () => {
-                    paths.forEach((p) => this.renderer.removeStyle(p, 'opacity'));
+                    entry.paths.forEach((p) => this.renderer.removeStyle(p, 'opacity'));
                     this.hoveredLabel = null;
                 });
             });
@@ -199,8 +201,8 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
         this.startTimerLoop();
         this.remainingLabels = Array.from(this.labelMap.keys());
         this.allLabels = Array.from(this.labelMap.keys());
-        this.labelMap.forEach((paths) => {
-            paths.forEach((path) => {
+        this.labelMap.forEach((entry) => {
+            entry.paths.forEach((path) => {
                 const currentFill = path.getAttribute('fill');
                 this.renderer.setAttribute(path, 'fill', currentFill && currentFill !== 'none' ? currentFill : '#9E9E9E');
                 path.setAttribute('opacity', '0.2');
@@ -236,8 +238,8 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
     }
 
     private resetSvg() {
-        this.labelMap.forEach((paths) => {
-            paths.forEach((path) => {
+        this.labelMap.forEach((entry) => {
+            entry.paths.forEach((path) => {
                 this.renderer.setAttribute(path, 'fill', '#9E9E9E');
                 path.setAttribute('opacity', '0.2');
                 path.style.cssText = '';
@@ -276,11 +278,13 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
         this.enteredLabel = this.stringUtils.sanitize(enteredLabel);
         if (this.gameStarted && !this.gamePaused) {
             const sanitizedSearchLabel = this.stringUtils.sanitize(this.searchLabel);
-          if (this.enteredLabel === sanitizedSearchLabel) {
-               const paths = this.labelMap.get(this.enteredLabel);
-                if (paths) {
-                    paths.forEach((path) => {
-                      path.removeAttribute('style');
+            const pathKey = this.rawToSanitizedLabelMap.get(this.enteredLabel);
+            const searchPathKey = this.rawToSanitizedLabelMap.get(sanitizedSearchLabel);
+            if (pathKey && pathKey === searchPathKey) {
+                const entry = this.labelMap.get(pathKey);
+                if (entry) {
+                    entry.paths.forEach((path) => {
+                        path.removeAttribute('style');
                         this.renderer.setAttribute(path, 'fill', this.colorMap[this.appellationErrorCount]);
                         path.style.cssText = `fill: ${this.colorMap[this.appellationErrorCount]} !important; animation: none !important`;
                         path.setAttribute('opacity', '1');
@@ -288,26 +292,24 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
                         path.classList.remove('blinking');
                         path.classList.add('validated');
                     });
-                } else {
-                    console.error(`No paths found for sanitized label: ${this.enteredLabel}`);
-                }
-                this.appellationErrorCount = 0;
-                this.remainingLabels = this.remainingLabels.filter((l) => l !== this.enteredLabel);
-                this.enteredLabel = '';
-                this.calculateScore();
-                if (this.remainingLabels.length === 0) {
-                    this.endGame();
-                } else {
-                    this.proposeNewZone();
+                    this.remainingLabels = this.remainingLabels.filter((l) => l !== pathKey);
+                    this.appellationErrorCount = 0;
+                    this.enteredLabel = '';
+                    this.calculateScore();
+                    if (this.remainingLabels.length === 0) {
+                        this.endGame();
+                    } else {
+                        this.proposeNewZone();
+                    }
                 }
             } else {
                 this.errorCount++;
                 this.appellationErrorCount++;
                 this.calculateScore();
                 if (this.appellationErrorCount >= 3) {
-                    const paths = this.labelMap.get(sanitizedSearchLabel);
-                    if (paths) {
-                        paths.forEach((path) => {
+                    const entry = this.labelMap.get(searchPathKey!);
+                    if (entry) {
+                        entry.paths.forEach((path) => {
                             path.removeAttribute('style');
                             this.renderer.setAttribute(path, 'fill', this.colorMap[3]);
                             path.style.cssText = `fill: ${this.colorMap[3]} !important; animation: none !important`;
@@ -316,32 +318,30 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
                             path.classList.remove('blinking');
                             path.classList.add('validated');
                         });
-                    } else {
-                        console.error(`No paths found for sanitized label: ${sanitizedSearchLabel}`);
-                    }
-                    this.displayedAnswer = this.searchLabel;
-                    this.displayAnswer = true;
-                    const isLastZone = this.remainingLabels.length === 1;
-                    this.remainingLabels = this.remainingLabels.filter((l) => l !== sanitizedSearchLabel);
-                    this.calculateScore();
-                    if (isLastZone) {
-                        this.waitThreeSeconds().then(() => {
-                            this.displayAnswer = false;
-                            this.displayedAnswer = '';
-                            this.endGame();
-                        });
-                    } else {
-                        this.waitThreeSeconds().then(() => {
-                            this.displayAnswer = false;
-                            this.displayedAnswer = '';
-                        });
-                        if (this.remainingLabels.length === 0) {
-                            this.endGame();
+                        this.displayedAnswer = this.rawLabelMap.get(searchPathKey!)?.[0] || this.searchLabel;
+                        this.displayAnswer = true;
+                        const isLastZone = this.remainingLabels.length === 1;
+                        this.remainingLabels = this.remainingLabels.filter((l) => l !== searchPathKey);
+                        this.calculateScore();
+                        if (isLastZone) {
+                            this.waitThreeSeconds().then(() => {
+                                this.displayAnswer = false;
+                                this.displayedAnswer = '';
+                                this.endGame();
+                            });
                         } else {
-                            this.proposeNewZone();
+                            this.waitThreeSeconds().then(() => {
+                                this.displayAnswer = false;
+                                this.displayedAnswer = '';
+                            });
+                            if (this.remainingLabels.length === 0) {
+                                this.endGame();
+                            } else {
+                                this.proposeNewZone();
+                            }
                         }
+                        this.appellationErrorCount = 0;
                     }
-                    this.appellationErrorCount = 0;
                 }
                 this.enteredLabel = '';
             }
@@ -359,21 +359,21 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
 
     private proposeNewZone() {
         if (this.remainingLabels.length > 0) {
-            this.labelMap.forEach((paths) => {
-                paths.forEach((path) => path.classList.remove('blinking'));
+            this.labelMap.forEach((entry) => {
+                entry.paths.forEach((path) => path.classList.remove('blinking'));
             });
-            const nextLabel = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
-            this.searchLabel =
-                Array.from(this.rawToSanitizedLabelMap.entries()).find(([raw, sanitized]) => sanitized === nextLabel)?.[0] || nextLabel;
-            const paths = this.labelMap.get(nextLabel);
-            if (paths) {
-                paths.forEach((path) => {
+            const nextPathKey = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
+            const entry = this.labelMap.get(nextPathKey);
+            const rawLabel = Array.from(this.rawToSanitizedLabelMap.entries()).find(([, pathKey]) => pathKey === nextPathKey)?.[0];
+            this.searchLabel = rawLabel?.split(',')[0].trim() || entry?.labels[0] || nextPathKey;
+            if (entry) {
+                entry.paths.forEach((path) => {
                     path.classList.add('blinking');
                     path.setAttribute('opacity', '1');
                     path.style.opacity = '1';
                 });
             } else {
-                console.error(`No paths found for sanitized label: ${nextLabel}`);
+                console.error(`No paths found for path key: ${nextPathKey}`);
             }
         }
     }

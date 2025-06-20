@@ -36,6 +36,12 @@
     opacity: 0.5 !important;
 }
 
+.svg-wrapper path.blinking {
+    fill: rgba(0, 200, 255, 0.6) !important;
+    stroke: rgba(255, 255, 255, 1) !important;
+    stroke-width: 2 !important;
+}
+
 .forced-search {
     display: flex;
     flex-direction: row;
@@ -171,9 +177,11 @@
 @keyframes blink {
     0%, 100% {
         opacity: 1;
+        stroke-width: 2;
     }
     50% {
-        opacity: 0.1;
+        opacity: 0.3;
+        stroke-width: 3;
     }
 }
 
@@ -237,4 +245,10 @@
 
 .answer-card {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.svg-wrapper path.blinking {
+    fill: rgba(1, 1, 255, 0.8) !important;
+    stroke: rgba(255, 255, 255, 0.8) !important;
+    stroke-width: 2 !important;
 }
