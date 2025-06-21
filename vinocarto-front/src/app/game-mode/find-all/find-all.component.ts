@@ -23,7 +23,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { StringUtilsService } from '../../utils/string-utils.service';
 import { GAME_CONFIG } from '../../utils/game-config';
 import { MatCardModule } from '@angular/material/card';
-import {MatTooltip} from "@angular/material/tooltip";
+import { MatTooltip } from '@angular/material/tooltip';
 
 export interface Result {
     appellation: string;
@@ -68,6 +68,7 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
     private pauseOffset = 0;
     private labelMap = new Map<string, SVGPathElement[]>();
     private rawToSanitizedLabelMap = new Map<string, string>();
+    private rawLabelMap = new Map<string, string[]>();
     remainingLabels: string[] = [];
     allLabels: string[] = [];
     results = new MatTableDataSource<Result>();
@@ -123,16 +124,21 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
             return;
         }
 
-        allPaths.forEach((path) => {
+        allPaths.forEach((path, index) => {
             const rawLabel = path.getAttribute('data-label');
             if (!rawLabel) return;
 
-            const sanitizedLabel = this.stringUtils.sanitize(rawLabel);
-            if (!this.labelMap.has(sanitizedLabel)) {
-                this.labelMap.set(sanitizedLabel, []);
-            }
-            this.labelMap.get(sanitizedLabel)!.push(path as SVGPathElement);
-            this.rawToSanitizedLabelMap.set(rawLabel, sanitizedLabel);
+            const pathKey = `path_${index}`;
+            const rawLabels = rawLabel.split(',').map(l => l.trim());
+            this.rawLabelMap.set(pathKey, rawLabels);
+            rawLabels.forEach(raw => {
+                const sanitizedLabel = this.stringUtils.sanitize(raw);
+                if (!this.labelMap.has(sanitizedLabel)) {
+                    this.labelMap.set(sanitizedLabel, []);
+                }
+                this.labelMap.get(sanitizedLabel)!.push(path as SVGPathElement);
+                this.rawToSanitizedLabelMap.set(raw, sanitizedLabel);
+            });
         });
     }
 
@@ -148,25 +154,28 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         this.startTimestamp = Date.now();
         this.pauseOffset = 0;
         this.startTimerLoop();
-        this.remainingLabels = Array.from(this.labelMap.keys());
         this.allLabels = Array.from(this.labelMap.keys());
-        const resultList: Result[] = this.allLabels.map((label) => ({
-            appellation: Array.from(this.rawToSanitizedLabelMap.entries()).find(
-                ([raw, sanitized]) => sanitized === label
-            )?.[0] || label,
-            label: this.stringUtils.sanitize(label),
-            timestamp: 0,
-            isCorrect: false,
-        }));
+        this.remainingLabels = [...this.allLabels];
+        const resultList: Result[] = [];
+        this.rawLabelMap.forEach((rawLabels, pathKey) => {
+            rawLabels.forEach(rawLabel => {
+                const sanitizedLabel = this.stringUtils.sanitize(rawLabel);
+                resultList.push({
+                    appellation: rawLabel,
+                    label: sanitizedLabel,
+                    timestamp: 0,
+                    isCorrect: false,
+                });
+            });
+        });
         resultList.sort((a, b) => a.appellation.localeCompare(b.appellation));
         this.results.data = resultList;
-        this.remainingLabels = this.remainingLabels.map((label) => this.stringUtils.sanitize(label));
         this.results.sort = this.sort;
         this.labelMap.forEach((paths) => {
             paths.forEach((path) => {
                 this.renderer.setAttribute(path, 'fill', '#9E9E9E');
-                path.setAttribute('opacity', '0.2');
-                path.classList.remove('blinking');
+                this.renderer.setAttribute(path, 'opacity', '0.2');
+                this.renderer.removeClass(path, 'blinking');
             });
         });
         this.cdr.detectChanges();
@@ -193,10 +202,23 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
             this.calculateScore();
             this.triggerConfetti();
             this.resetSvg();
+        } else {
+            this.remainingLabels.forEach((sanitizedLabel) => {
+                const paths = this.labelMap.get(sanitizedLabel);
+                if (paths) {
+                    paths.forEach((path) => {
+                        this.renderer.removeAttribute(path, 'style');
+                        this.renderer.setAttribute(path, 'fill', '#D50000');
+                        this.renderer.setStyle(path, 'fill', '#D50000');
+                        this.renderer.setStyle(path, 'opacity', '1');
+                        this.renderer.setAttribute(path, 'opacity', '1');
+                        this.renderer.removeClass(path, 'blinking');
+                        this.renderer.addClass(path, 'validated');
+                    });
+                }
+            });
         }
-        this.results.data = this.results.data.map((result) => ({
-            ...result,
-        }));
+        this.results.data = [...this.results.data];
         this.cdr.detectChanges();
     }
 
@@ -204,11 +226,12 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         this.labelMap.forEach((paths) => {
             paths.forEach((path) => {
                 this.renderer.setAttribute(path, 'fill', '#9E9E9E');
-                path.setAttribute('opacity', '0.2');
-                path.style.cssText = '';
-                path.classList.add('clickable-region');
-                path.classList.remove('blinking');
-                path.classList.remove('validated');
+                this.renderer.setAttribute(path, 'opacity', '0.2');
+                this.renderer.removeStyle(path, 'fill');
+                this.renderer.removeStyle(path, 'opacity');
+                this.renderer.addClass(path, 'clickable-region');
+                this.renderer.removeClass(path, 'blinking');
+                this.renderer.removeClass(path, 'validated');
             });
         });
     }
@@ -259,13 +282,13 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
                     const paths = this.labelMap.get(this.enteredLabel);
                     if (paths) {
                         paths.forEach((path) => {
-                            path.removeAttribute('style');
+                            this.renderer.removeAttribute(path, 'style');
                             this.renderer.setAttribute(path, 'fill', '#4CAF50');
-                            path.style.cssText = `fill: #4CAF50 !important; opacity: 1 !important; animation: none !important`;
-                            path.setAttribute('opacity', '1');
-                            path.style.opacity = '1';
-                            path.classList.remove('blinking');
-                            path.classList.add('validated');
+                            this.renderer.setStyle(path, 'fill', '#4CAF50');
+                            this.renderer.setStyle(path, 'opacity', '1');
+                            this.renderer.setAttribute(path, 'opacity', '1');
+                            this.renderer.removeClass(path, 'blinking');
+                            this.renderer.addClass(path, 'validated');
                         });
                     }
                 }
@@ -293,11 +316,12 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
             this.labelMap.forEach((paths, sanitizedLabel) => {
                 if (this.remainingLabels.includes(sanitizedLabel)) {
                     paths.forEach((path) => {
-                        path.removeAttribute('style');
+                        this.renderer.removeAttribute(path, 'style');
                         this.renderer.setAttribute(path, 'fill', '#EF6C00');
-                        path.style.cssText = `fill: #EF6C00 !important; opacity: 1 !important`;
-                        path.setAttribute('opacity', '1');
-                        path.classList.add('blinking');
+                        this.renderer.setStyle(path, 'fill', '#EF6C00');
+                        this.renderer.setStyle(path, 'opacity', '1');
+                        this.renderer.setAttribute(path, 'opacity', '1');
+                        this.renderer.addClass(path, 'blinking');
                     });
                 }
             });
@@ -305,11 +329,12 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
                 this.labelMap.forEach((paths, sanitizedLabel) => {
                     if (this.remainingLabels.includes(sanitizedLabel)) {
                         paths.forEach((path) => {
-                            path.removeAttribute('style');
+                            this.renderer.removeAttribute(path, 'style');
                             this.renderer.setAttribute(path, 'fill', '#9E9E9E');
-                            path.style.cssText = `fill: #9E9E9E !important; opacity: 0.2 !important`;
-                            path.setAttribute('opacity', '0.2');
-                            path.classList.remove('blinking');
+                            this.renderer.setStyle(path, 'fill', '#9E9E9E');
+                            this.renderer.setStyle(path, 'opacity', '0.2');
+                            this.renderer.setAttribute(path, 'opacity', '0.2');
+                            this.renderer.removeClass(path, 'blinking');
                         });
                     }
                 });

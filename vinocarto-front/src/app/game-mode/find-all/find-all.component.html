@@ -67,6 +67,7 @@
                                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Appellation</th>
                                 <td mat-cell *matCellDef="let result">
                                     <span *ngIf="result.isCorrect" class="success-text">{{ result.appellation }}</span>
+                                    <span *ngIf="!result.isCorrect && gameEnded" class="error-text">{{ result.appellation }}</span>
                                 </td>
                             </ng-container>
                             <ng-container matColumnDef="timestamp">
