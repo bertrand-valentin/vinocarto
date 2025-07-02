@@ -24,3 +24,4 @@ target/
 /vinocarto-front/.angular/
 .env
 nginx/certs/
+docker-compose-override.yml
