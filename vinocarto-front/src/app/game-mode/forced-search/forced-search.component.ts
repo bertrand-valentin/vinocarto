@@ -21,6 +21,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { StringUtilsService } from '../../utils/string-utils.service';
 import { GAME_CONFIG } from '../../utils/game-config';
+import {MatDialog} from "@angular/material/dialog";
+import {FullScreenDialogComponent} from "../common/full-screen/full-screen-dialog.component";
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'forced-search',
@@ -71,6 +74,9 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
     appellationErrorCount = 0;
     enteredLabel: string = '';
     allLabels: string[] = [];
+    isFullscreen = false;
+    validation$ = new Subject<void>();
+
     private colorMap: { [key: number]: string } = {
         0: '#00C853',
         1: '#FFB300',
@@ -87,7 +93,8 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
         private el: ElementRef,
         private renderer: Renderer2,
         private stringUtils: StringUtilsService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private dialog: MatDialog
     ) {}
 
     ngOnChanges(changes: SimpleChanges) {
@@ -296,6 +303,7 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
                     this.appellationErrorCount = 0;
                     this.enteredLabel = '';
                     this.calculateScore();
+                    this.validation$.next();
                     if (this.remainingLabels.length === 0) {
                         this.endGame();
                     } else {
@@ -344,6 +352,7 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
                     }
                 }
                 this.enteredLabel = '';
+                this.validation$.next();
             }
         }
     }
@@ -413,5 +422,20 @@ export class ForcedSearchComponent implements OnChanges, OnDestroy {
 
     private waitThreeSeconds(): Promise<void> {
         return new Promise((resolve) => setTimeout(resolve, 3000));
+    }
+
+    openFullscreenDialog() {
+        const svgWrapper: HTMLElement = this.el.nativeElement.querySelector('.svg-wrapper');
+
+        this.dialog.open(FullScreenDialogComponent, {
+            width: '100vw',
+            height: '100vh',
+            panelClass: 'custom-fullscreen-dialog',
+            data: {
+                getCurrentSvg: () => svgWrapper?.innerHTML || '',
+                overlayType: 'input',
+                submitFn: (value: string) => this.submitValue(value)
+            }
+        });
     }
 }

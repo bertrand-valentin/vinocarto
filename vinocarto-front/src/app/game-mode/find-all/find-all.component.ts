@@ -24,6 +24,8 @@ import { StringUtilsService } from '../../utils/string-utils.service';
 import { GAME_CONFIG } from '../../utils/game-config';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
+import {FullScreenDialogComponent} from "../common/full-screen/full-screen-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 export interface Result {
     appellation: string;
@@ -86,7 +88,8 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         private el: ElementRef,
         private renderer: Renderer2,
         private stringUtils: StringUtilsService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private dialog: MatDialog
     ) {}
 
     ngOnChanges(changes: SimpleChanges) {
@@ -157,15 +160,16 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
         this.allLabels = Array.from(this.labelMap.keys());
         this.remainingLabels = [...this.allLabels];
         const resultList: Result[] = [];
-        this.rawLabelMap.forEach((rawLabels, pathKey) => {
-            rawLabels.forEach(rawLabel => {
-                const sanitizedLabel = this.stringUtils.sanitize(rawLabel);
-                resultList.push({
-                    appellation: rawLabel,
-                    label: sanitizedLabel,
-                    timestamp: 0,
-                    isCorrect: false,
-                });
+        this.labelMap.forEach((paths, sanitizedLabel) => {
+            const rawLabel = Array.from(
+                this.rawToSanitizedLabelMap.entries()
+            ).find(([, s]) => s === sanitizedLabel)?.[0] || sanitizedLabel;
+
+            resultList.push({
+                appellation: rawLabel,
+                label: sanitizedLabel,
+                timestamp: 0,
+                isCorrect: false,
             });
         });
         resultList.sort((a, b) => a.appellation.localeCompare(b.appellation));
@@ -362,5 +366,21 @@ export class FindAllComponent implements OnChanges, AfterViewChecked {
             this.showConfetti = false;
             this.confettiArray = [];
         }, 3000);
+    }
+
+    openFullscreenDialog() {
+        const svgWrapper: HTMLElement | null = this.el.nativeElement.querySelector('.svg-wrapper');
+        if (!svgWrapper) return;
+
+        this.dialog.open(FullScreenDialogComponent, {
+            width: '100vw',
+            height: '100vh',
+            panelClass: 'custom-fullscreen-dialog',
+            data: {
+                svgWrapper: svgWrapper,
+                overlayType: 'input',
+                submitFn: (label: string) => this.submitValue(label)
+            }
+        });
     }
 }

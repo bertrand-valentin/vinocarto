@@ -130,18 +130,33 @@
     display: flex;
     flex-direction: row;
     gap: 4vh;
-    align-items: flex-start;
-    margin-top: 4vh;
+    align-items: stretch;
+    margin-top: 3vh;
+    max-height: 33vh;
+}
+
+.example-container,
+.score-card {
+    flex: 1;
+    overflow-y: auto;
 }
 
 .example-container {
-    overflow: auto;
+    flex: 55;
     background-color: var(--accent-color);
     border-radius: 1vh;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 0.4vh 0.8vh rgba(0, 0, 0, 0.3);
-    width: 55%;
-    max-height: 30vh;
+}
+
+.score-card {
+    flex: 45;
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    border-radius: 1.2vh;
+    padding: 3vh;
+    box-shadow: 0 0.6vh 1.2vh rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 table {
@@ -295,4 +310,27 @@ tr.mat-row:hover {
 
 .blinking {
     animation: blink 1s infinite;
+}
+
+.svg {
+    position: relative;
+}
+
+.fullscreen-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-button mat-icon {
+    font-size: 24px;
+    color: #333;
 }

@@ -1,5 +1,8 @@
 <div class="find-all">
     <div class="svg">
+        <div class="fullscreen-button" (click)="openFullscreenDialog()">
+            <mat-icon>{{ 'fullscreen' }}</mat-icon>
+        </div>
         <div class="svg-wrapper" [innerHTML]="svgContent"></div>
         <div *ngIf="!svgContent" class="error-hidden">Icône introuvable ou chargement échoué</div>
     </div>

@@ -18,6 +18,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
 import {GAME_CONFIG} from '../../utils/game-config';
+import {MatDialog} from "@angular/material/dialog";
+import { FullScreenDialogComponent } from '../common/full-screen/full-screen-dialog.component';
 
 @Component({
     selector: 'point-and-click',
@@ -60,7 +62,8 @@ export class PointAndClickComponent implements OnInit, OnChanges, OnDestroy {
         private sanitizer: DomSanitizer,
         private el: ElementRef,
         private renderer: Renderer2,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit() {
@@ -261,47 +264,51 @@ export class PointAndClickComponent implements OnInit, OnChanges, OnDestroy {
         this.startGame();
     }
 
-    private onZoneClick(label: string) {
-        if (this.gameStarted && !this.gamePaused) {
-            if (label === this.searchLabel) {
-                this.remainingLabels = this.remainingLabels.filter(l => l !== label);
-                const entry = this.labelMap.get(label)!;
-                const allLabelsFound = entry.labels.every(l => !this.remainingLabels.includes(l));
-                entry.paths.forEach(path => {
-                    if (allLabelsFound) {
-                        this.renderer.addClass(path, 'found');
-                        this.renderer.removeClass(path, 'partial');
-                        this.renderer.removeClass(path, 'clickable-region');
-                        this.renderer.setAttribute(path, 'fill', '#4CAF50');
-                        this.renderer.setAttribute(path, 'opacity', '1');
-                    } else {
-                        this.renderer.addClass(path, 'partial');
-                        this.renderer.removeClass(path, 'found');
-                        this.renderer.setAttribute(path, 'fill', '#FF4500');
-                        this.renderer.setAttribute(path, 'opacity', '0.6');
-                    }
-                    console.log('Classe appliquée au path:', path, 'Classe:', allLabelsFound ? 'found' : 'partial', 'Styles actuels:', path.getAttribute('style'));
-                });
-                this.calculateScore();
-                if (this.remainingLabels.length === 0) {
-                    this.endGame();
+    private onZoneClick(label: string, fromFullscreen = false) {
+        if (!this.gameStarted || this.gamePaused) return;
+
+        const entry = this.labelMap.get(label);
+        if (!entry) return;
+
+        const isCorrect = entry.labels.includes(this.searchLabel);
+
+        if (isCorrect) {
+            entry.paths.forEach(path => this.renderer.removeClass(path, 'error'));
+
+            this.remainingLabels = this.remainingLabels.filter(l => l !== label);
+            const allLabelsFound = entry.labels.every(l => !this.remainingLabels.includes(l));
+
+            entry.paths.forEach(path => {
+                if (allLabelsFound) {
+                    this.renderer.addClass(path, 'found');
+                    this.renderer.removeClass(path, 'partial');
+                    this.renderer.removeClass(path, 'clickable-region');
+                    this.renderer.setAttribute(path, 'fill', '#4CAF50');
+                    this.renderer.setAttribute(path, 'opacity', '1');
                 } else {
-                    this.searchLabel = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
+                    this.renderer.addClass(path, 'partial');
+                    this.renderer.removeClass(path, 'found');
+                    this.renderer.setAttribute(path, 'fill', '#FF4500');
+                    this.renderer.setAttribute(path, 'opacity', '0.6');
                 }
-            } else {
-                this.errorCount++;
-                this.labelMap.get(label)?.paths.forEach(path => {
-                    this.renderer.addClass(path, 'error');
-                    this.renderer.setAttribute(path, 'fill', '#F44336');
-                    this.renderer.setAttribute(path, 'opacity', '0.7');
-                    setTimeout(() => {
-                        this.renderer.removeClass(path, 'error');
-                        this.renderer.setAttribute(path, 'fill', path.getAttribute('fill') || '#9E9E9E');
-                        this.renderer.setAttribute(path, 'opacity', '0.2');
-                    }, 500);
-                });
-                this.calculateScore();
-            }
+            });
+
+            this.calculateScore();
+            if (this.remainingLabels.length === 0) this.endGame();
+            else this.searchLabel = this.remainingLabels[Math.floor(Math.random() * this.remainingLabels.length)];
+        } else if (!fromFullscreen) {
+            this.errorCount++;
+            entry.paths.forEach(path => {
+                this.renderer.addClass(path, 'error');
+                this.renderer.setAttribute(path, 'fill', '#F44336');
+                this.renderer.setAttribute(path, 'opacity', '0.7');
+                setTimeout(() => {
+                    this.renderer.removeClass(path, 'error');
+                    this.renderer.setAttribute(path, 'fill', path.getAttribute('fill') || '#9E9E9E');
+                    this.renderer.setAttribute(path, 'opacity', '0.2');
+                }, 500);
+            });
+            this.calculateScore();
         }
     }
 
@@ -343,5 +350,22 @@ export class PointAndClickComponent implements OnInit, OnChanges, OnDestroy {
             this.showConfetti = false;
             this.confettiArray = [];
         }, 3000);
+    }
+
+    openFullscreenDialog() {
+        const svgWrapper: HTMLElement | null = this.el.nativeElement.querySelector('.svg-wrapper');
+        if (!svgWrapper) return;
+
+        this.dialog.open(FullScreenDialogComponent, {
+            width: '100vw',
+            height: '100vh',
+            panelClass: 'custom-fullscreen-dialog',
+            data: {
+                svgWrapper: svgWrapper,
+                overlayType: 'label',
+                getLabel: () => this.searchLabel,
+                onZoneClickCallback: (label: string) => this.onZoneClick(label, true)
+            }
+        });
     }
 }

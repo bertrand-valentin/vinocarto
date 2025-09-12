@@ -1,0 +1,68 @@
+.fullscreen-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg-wrapper {
+  width: 95vw;
+  height: 95vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg-wrapper svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.overlay-input {
+  position: absolute;
+  bottom: 2vh;
+  left: 2vh;
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+
+.overlay-input input {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid white;
+  border-radius: 6px;
+  padding: 0.5vh 1vh;
+  font-size: 2vh;
+  color: white;
+  outline: none;
+}
+
+.overlay-input button {
+  color: white;
+}
+
+.close-btn {
+  position: absolute;
+  top: 2vh;
+  right: 2vh;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.svg-wrapper svg path {
+  fill: inherit !important;
+}
+
+.overlay-label {
+  position: absolute;
+  bottom: 2vh;
+  left: 2vh;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  padding: 0.5vh 1vh;
+  border-radius: 6px;
+  font-size: 2vh;
+}

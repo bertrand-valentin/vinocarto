@@ -1,6 +1,9 @@
 <div class="forced-search">
     <div class="svg">
         <div class="svg-wrapper" [innerHTML]="svgContent"></div>
+        <button class="fullscreen-btn" mat-icon-button (click)="openFullscreenDialog()">
+            <mat-icon>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+        </button>
         <div *ngIf="!svgContent" class="error">Icône introuvable ou chargement échoué</div>
     </div>
     <div class="side">

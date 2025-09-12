@@ -1,0 +1,18 @@
+<div class="fullscreen-container">
+    <div class="svg-wrapper" #svgHost [innerHTML]="svgHtml"></div>
+
+    <ng-container *ngIf="overlayType === 'label'">
+        <div class="overlay-label">{{ labelText }}</div>
+    </ng-container>
+
+    <ng-container *ngIf="overlayType === 'input'">
+        <div class="overlay-input">
+            <input [(ngModel)]="inputValue" (keydown.enter)="onSubmit()" placeholder="Appellation" />
+            <button mat-icon-button (click)="onSubmit()"><mat-icon>check</mat-icon></button>
+        </div>
+    </ng-container>
+
+    <button class="close-btn" mat-icon-button (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>

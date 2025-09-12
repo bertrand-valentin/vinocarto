@@ -20,6 +20,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {StringUtilsService} from "../../utils/string-utils.service";
 import { GAME_CONFIG } from '../../utils/game-config';
+import {FullScreenDialogComponent} from "../common/full-screen/full-screen-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
     selector: 'auto-search',
@@ -64,7 +66,8 @@ export class AutoSearchComponent implements OnChanges, OnDestroy {
         private sanitizer: DomSanitizer,
         private el: ElementRef,
         private renderer: Renderer2,
-        private stringUtils: StringUtilsService
+        private stringUtils: StringUtilsService,
+        private dialog: MatDialog
     ) {}
 
     ngOnChanges(changes: SimpleChanges) {
@@ -356,5 +359,26 @@ export class AutoSearchComponent implements OnChanges, OnDestroy {
             this.showConfetti = false;
             this.confettiArray = [];
         }, 3000);
+    }
+
+    openFullscreenDialog() {
+        const svgWrapper: HTMLElement | null = this.el.nativeElement.querySelector('.svg-wrapper');
+        if (!svgWrapper) return;
+
+        this.dialog.open(FullScreenDialogComponent, {
+            width: '100vw',
+            height: '100vh',
+            panelClass: 'custom-fullscreen-dialog',
+            data: {
+                svgWrapper: svgWrapper,
+                overlayType: 'input',
+                getCurrentSvg: () => svgWrapper.innerHTML,
+                submitFn: (value: string) => this.submitValue(value),
+                getLabel: () => this.searchLabel,
+                onZoneClickCallback: (label: string) => {
+                    this.onLabelClick(label);
+                }
+            },
+        });
     }
 }
