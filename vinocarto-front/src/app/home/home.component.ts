@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CardComponent } from "../card/card.component";
 import { Card } from "../card";
-import { NgForOf, NgIf } from "@angular/common";
+import { NgForOf } from "@angular/common";
 import { CardsService } from "../utils/cards.service";
 import { StringUtilsService } from "../utils/string-utils.service";
 import { FormsModule } from "@angular/forms";
@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     standalone: true,
     imports: [
         CardComponent,
-        NgForOf, NgIf,
+        NgForOf,
         FormsModule,
         MatInputModule,
         MatSelectModule,
@@ -34,26 +34,7 @@ export class HomeComponent implements OnInit {
     sortField: keyof Card = 'name';
     sortAsc = true;
 
-    // PWA install prompt state
-    deferredPrompt: any = null;
-    showInstallPrompt = false;
-    installed = false;
-
     ngOnInit() {
-        // Listen for the PWA install prompt
-        window.addEventListener('beforeinstallprompt', (e: Event) => {
-            e.preventDefault();
-            this.deferredPrompt = e as any;
-            this.showInstallPrompt = true;
-        });
-
-        // Detect installation
-        window.addEventListener('appinstalled', () => {
-            this.installed = true;
-            this.showInstallPrompt = false;
-            this.deferredPrompt = null;
-        });
-
         this.cardService.getAllDetails().then(
             cards => {
                 for (const card of cards) {
@@ -66,28 +47,6 @@ export class HomeComponent implements OnInit {
             },
             error => console.error('Erreur de chargement des cartes:', error)
         );
-    }
-
-    onInstallClicked() {
-        if (!this.deferredPrompt) {
-            return;
-        }
-        this.deferredPrompt.prompt();
-        this.deferredPrompt.userChoice.then((choiceResult: any) => {
-            if (choiceResult.outcome === 'accepted') {
-                this.installed = true;
-            }
-            this.deferredPrompt = null;
-            this.showInstallPrompt = false;
-        }).catch((err: any) => {
-            console.error('install prompt error', err);
-            this.deferredPrompt = null;
-            this.showInstallPrompt = false;
-        });
-    }
-
-    onDismissInstall() {
-        this.showInstallPrompt = false;
     }
 
     toggleSortDirection() {
